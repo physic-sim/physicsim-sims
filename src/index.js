@@ -29,9 +29,7 @@ function updateLoading(textElement) {
 
 function stopLoading() {
     isLoading = false;
-    const loadingWrapper = document.getElementById('loading-wrapper');
-    loadingWrapper.style.display = 'none'
-
+    document.getElementById('body').firstElementChild.remove();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
