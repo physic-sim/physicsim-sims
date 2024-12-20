@@ -16,7 +16,8 @@ export class Simulation {
 		this.selected = 'graphs';
 	}
 
-	setup(p) {
+	setup(p, stopLoading) {
+		stopLoading();
 		p.frameRate(30)
 		// make canvas
 		this.width = window.innerWidth;

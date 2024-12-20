@@ -219,6 +219,40 @@ input[type="range"].slider-input-slider::-webkit-slider-thumb:active {
     background: var(--alt-purple);
 }
 
+/* Loading Window */
+.loading-wrapper {
+    position: absolute;
+    z-index: 1000;
+    width: 100vw;
+    height: 100vh;
+    background-color: #1e1e1e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-logo {
+    height: 75px;
+    padding: 1em;
+}
+
+.loading-txt {
+    font-family: 'CMUSerifRoman';
+    font-weight: normal;
+    font-style: normal;
+    color: #fff;
+    font-size: 1.5em;
+    width: 50vw;
+    border-left: 2px solid var(--ctrl-bg);
+    padding-left: 1em;
+}
+
 /* Simulation Window */
 body, html {
     padding: 0;

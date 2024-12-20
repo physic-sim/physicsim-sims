@@ -4,6 +4,43 @@ import page from 'page';
 // import css
 import './styles/styles.css'
 
+// loading logic
+let isLoading = true;
+let loadingTexts = [
+    'Setting quantum state...',
+    'Accelerating protons!',
+    'Diffracting light...',
+    'Figuring out whether light is a wave or particle?..',
+    'Checking conservation of momentum...',
+    'Checking Newton\'s Laws...',
+    'Reading up on Snell\'s Law...'
+]
+
+function updateLoading(textElement) {
+
+    if (!isLoading) return;
+
+    const randomIndex = Math.floor(Math.random() * loadingTexts.length);
+    const text = loadingTexts[randomIndex];
+    textElement.innerHTML = text;
+
+    setTimeout(() => updateLoading(textElement), 300);
+}
+
+function stopLoading() {
+    isLoading = false;
+    const loadingWrapper = document.getElementById('loading-wrapper');
+    loadingWrapper.style.display = 'none'
+
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const loadingText = document.getElementById('loading-txt');
+    updateLoading(loadingText);
+})
+
+
+
 // add additional control logic for the simulation
 function loadSim(Sim, title) {
     p5.disableFriendlyErrors = true;
@@ -21,7 +58,7 @@ function loadSim(Sim, title) {
     )
 
     let p = new p5((p) => {
-        p.setup = () => sketch.setup(p);
+        p.setup = () => sketch.setup(p, stopLoading);
         p.draw = () => sketch.draw(p);
         p.windowResized = () => sketch.handleResize(p)
     });
