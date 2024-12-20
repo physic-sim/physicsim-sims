@@ -28,6 +28,7 @@ function updateLoading(textElement) {
 }
 
 function stopLoading() {
+    if (!isLoading) return;
     isLoading = false;
     document.getElementById('body').firstElementChild.remove();
 }

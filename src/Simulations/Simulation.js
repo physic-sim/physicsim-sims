@@ -28,7 +28,7 @@ export class Simulation {
 
 		// add basic controls
 		this.controlWrapper.innerHTML = '';
-		this.runBtn = new ResetButton(this.controlWrapper, (() => (this.setup(p))).bind(this));
+		this.runBtn = new ResetButton(this.controlWrapper, (() => (this.setup(p, stopLoading))).bind(this));
 		this.pauseBtn = new PauseButton(this.controlWrapper, this.togglePause.bind(this))
 
 		this.init(p)
