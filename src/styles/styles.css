@@ -1,0 +1,434 @@
+@import url("https://fontlibrary.org//face/cmu-serif");
+
+body, html {
+    width: 100vw;
+    height: 100%;
+}
+
+/* Brand Colours */
+:root {
+    --main-bg: #1e1e1e;
+    --ctrl-bg: #ffffff;
+    --alt-green: #a6bd6f;
+    --alt-purple: #6c46cc;
+    --alt-red: #9c6270;
+}
+
+/* NumInput */
+.num-input-input {
+    width: 40px;
+    height: 20px;
+    margin: .1em;
+    padding: .2em;
+    background-color: var(--ctrl-bg);
+    outline: none;
+    border: none;
+    font-size: medium;
+    font-family: 'CMUSerifRoman';
+    font-weight: normal;
+    font-style: normal;
+    text-align: center;
+}
+
+.num-input-input::-webkit-outer-spin-button,
+.num-input-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input-disabled {
+    color: #fff;
+}
+
+/* VectorInput */
+.vector-input-container {
+    display: flex;
+    align-items: center;
+    font-family: 'CMUSerifRoman';
+    font-weight: normal;
+    font-style: normal;
+    padding: .5em;
+}
+
+.vector-input-label {
+    text-decoration: underline;
+}
+
+.vector-input-text {
+    padding: .5em;
+}
+
+.vector-input-bra {
+    width: 40px;
+    z-index: 1;
+}
+
+.vector-input-in-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 10px;
+}
+
+/* Value Input */
+.value-input-container {
+    display: flex;
+    align-items: center;
+    font-size: medium;
+    font-family: 'CMUSerifRoman';
+    font-weight: normal;
+    font-style: normal;
+    padding: .5em;
+}
+
+.value-input-text {
+    padding: .25em;
+}
+
+/* RunBtn */
+.btn-run {
+    border: none;
+    outline: none;
+    border: 2px solid var(--alt-green);
+    background-color: #ffffff00;
+    padding: 1em;
+    border-radius: .6em;
+    color: #fff;
+    font-size: medium;
+    margin: .25em;
+    transition: all 500ms;
+}
+
+.btn-run:hover {
+    background-color: #a6bd6f55;
+}
+
+/* PauseBtn */
+.btn-pause {
+    border: none;
+    outline: none;
+    border: 2px solid var(--alt-red);
+    background-color: #ffffff00;
+    padding: 1em;
+    border-radius: .6em;
+    color: #fff;
+    font-size: medium;
+    margin: .25em;
+    transition: all 500ms;
+}
+
+.btn-pause:hover {
+    background-color: #9c627055;
+}
+
+/* Altbtn */
+.btn-alt {
+    border: none;
+    outline: none;
+    border: 2px solid var(--alt-purple);
+    background-color: #ffffff00;
+    padding: 1em;
+    border-radius: .6em;
+    color: #fff;
+    font-size: medium;
+    margin: .25em;
+    transition: background-color 500ms;
+}
+
+.btn-alt:hover {
+    background-color: #6c46cc55;
+}
+
+/* ToggleBtn */
+.btn-toggle {
+    margin: .25em;
+    padding: 1em;
+    background-color: #ffffff00;
+    outline: none;
+    border: 2px solid var(--main-bg);
+    color: #fff;
+    border-radius: .6em;
+    transition: background-color 500ms;
+}
+
+.btn-toggle:hover {
+    background-color: #a6bd6f;
+}
+
+.btn-toggle--selected {
+    background-color: var(--alt-purple);
+}
+
+/* Slider Input */
+.slider-input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+input[type="range"].slider-input-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: #ddd;
+    border-radius: 5px;
+    outline: none; 
+    transition: background 0.3s ease;
+}
+
+input[type="range"].slider-input-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--alt-green);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+input[type="range"].slider-input-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--alt-green);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    transition: background 0.3s ease;
+}
+
+input[type="range"].slider-input-slider::-ms-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--alt-green);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    transition: background 0.3s ease;
+}
+
+input[type="range"].slider-input-slider::-webkit-slider-thumb:hover {
+    background: var(--alt-purple);
+}
+
+input[type="range"].slider-input-slider::-webkit-slider-thumb:active {
+    background: var(--alt-purple);
+}
+
+/* Simulation Window */
+body, html {
+    padding: 0;
+    margin: 0;
+    background-color: #000;
+    font-family: 'CMUSerifRoman';
+    font-weight: normal;
+    font-style: normal;
+    width: 100vw;
+    overflow-x: hidden;
+}
+
+.header-wrapper {
+    position: absolute;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 1em;
+}
+
+.header-logo {
+    padding: 1em;
+    width: 100px;
+    height: auto;
+}
+
+.header-title {
+    font-size: 25px;
+    color: #fff;
+}
+
+.ctrl-wrapper--bottom {
+    position: absolute;
+    left: 0;    
+    bottom: 0;
+    padding: 1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+
+.ctrl-wrapper--left {
+    position: absolute;
+    left: 0;
+    top: 45%;
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+}
+
+.sketch-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    height: 70vh;
+}
+
+.inputs-wrapper {
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 100;
+    background-color: var(--ctrl-bg);
+    height: 100vh;
+    width: 30vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: scroll;
+}
+
+.input-selector-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    transition: display 250ms;
+}
+
+.input-selector-options {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.input-selector-option {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 1em;
+    border-bottom: 2px solid #9a9a9a;
+    background-color: #eeeeee;
+    width: 50%;
+    transition: all 250ms;
+}
+
+.input-selector-option:hover {
+    border-bottom: 2px solid #000;
+}
+
+.input-selector-option--selected {
+    border-bottom: 2px solid #000;
+    background-color: #ffffff;
+}
+
+.inputs-header-wrapper {
+    padding-left: .25em;
+    padding-right: .25em;
+    text-align: center;
+    border-bottom: 2px solid #9a9a9a;
+}
+
+.inputs-prompt {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.inputs-prompt-img-axis {
+    height: 150px;
+    width: auto;
+}
+
+.inputs-header-hide-btn {
+    position: relative;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background-color: #9a9a9a;
+    outline: none;
+    border: none;
+    padding: .75em 1em 1em 1em;
+    color: #fff;
+    border-radius: 0 0 2em 2em;
+    transition: background-color 500ms;
+}
+
+.inputs-header-hide-btn:hover {
+    background-color: var(--alt-green);
+}
+
+.inputs-container {
+    width: 100;
+    padding-bottom: 2em;
+}
+
+.inputs-header {
+    text-decoration: underline;
+    font-size: large;
+}
+
+.inputs-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1em;
+}
+
+.graphs-wrapper {  
+    position: absolute;
+    display: grid;
+    top: 0;
+    right: 0;
+    width: 30vw;
+    height: 100vh;
+    background-color: var(--main-bg);
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-columns: 95%;
+    overflow-y: scroll;
+}
+
+.graph {
+    height: 350px;
+}
+
+.frame-rate {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+    color: #9a9a9a;
+}
+
+.attr-wrapper {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+    color: #c6c6c6;
+}
+
+@media (max-width: 768px) {
+    .inputs-wrapper {
+        width: 100vw;
+        height: 40vh;
+        bottom: 0;
+        top: auto;
+    }
+
+    .graphs-wrapper {
+        width: 100vw;
+        height: 40vh;
+        bottom: 0;
+        top: auto;
+    }
+
+    .ctrl-wrapper--left {
+        top: 20%;
+    }
+}
