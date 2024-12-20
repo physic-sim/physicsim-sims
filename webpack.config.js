@@ -22,6 +22,7 @@ module.exports = {
         }),
         new CopyWebpackPlugin({
             patterns: [
+              { from: './src/static/robots.txt', to: 'robots.txt' },
               { from: './src/static', to: 'static' }, 
             ],
         }),
