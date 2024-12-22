@@ -22,8 +22,8 @@ module.exports = {
         }),
         new CopyWebpackPlugin({
             patterns: [
-              { from: './src/static/robots.txt', to: 'robots.txt' },
-              { from: './src/static', to: 'static' }, 
+                { from: './src/static/robots.txt', to: 'robots.txt' },
+                { from: './src/static', to: 'static' }, 
             ],
         }),
     ],
@@ -44,7 +44,7 @@ module.exports = {
                 test: require.resolve('p5'),
                 loader: 'expose-loader',
                 options: {
-                  exposes: ['p5'],
+                    exposes: ['p5'],
                 },
             },
         ],

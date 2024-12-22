@@ -1,5 +1,4 @@
 export class SliderInput {
-
     base;
     input;
     min;
@@ -22,22 +21,22 @@ export class SliderInput {
         this.pLabel.innerHTML = `${this.label} = ${val.toFixed(2)} ${this.unit}`;
 
         this.input = document.createElement('input');
-        this.input.type = 'range'
+        this.input.type = 'range';
         this.input.min = this.min;
         this.input.max = this.max;
         this.input.value = val;
         this.input.step = step;
         this.input.classList.add('slider-input-slider');
 
-        container.append(this.pLabel, this.input)
-        
+        container.append(this.pLabel, this.input);
+
         this.base.append(container);
 
         this.input.addEventListener('input', this.update.bind(this));
     }
 
     get() {
-        return Number(this.input.value);
+        return parseFloat(this.input.value);
     }
 
     set(val) {
@@ -47,5 +46,4 @@ export class SliderInput {
     update() {
         this.pLabel.innerHTML = `${this.label} = ${this.get().toFixed(2)} ${this.unit}`;
     }
-
 }

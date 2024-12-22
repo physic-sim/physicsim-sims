@@ -1,14 +1,12 @@
-import { NumInput } from "./NumInput";
+import { NumInput } from './NumInput';
 
 export class ValueInput {
-    
     base;
     val;
     label;
     unit;
 
-    constructor(base, val, label, unit, disabled=false, onClick=null) {
-
+    constructor(base, val, label, unit, disabled = false, onClick = null) {
         this.base = base;
         this.label = label;
         this.unit = unit;
@@ -21,9 +19,8 @@ export class ValueInput {
         pLabel.innerHTML = this.label;
         pLabel.classList.add('value-input-text');
 
-
-        let pEqual = document.createElement('p')
-        pEqual.innerHTML = '='
+        let pEqual = document.createElement('p');
+        pEqual.innerHTML = '=';
         pLabel.classList.add('value-input-text');
 
         let pUnit = document.createElement('p');
@@ -31,7 +28,7 @@ export class ValueInput {
         pUnit.classList.add('value-input-text');
 
         container.append(pLabel, pEqual);
-        
+
         this.val = new NumInput(container, val, disabled, onClick);
 
         container.append(pUnit);
@@ -44,12 +41,10 @@ export class ValueInput {
     }
 
     set(val) {
-        this.val.set(val)
+        this.val.set(val);
     }
 
     toggleDisable() {
         this.val.toggleDisable();
     }
-
-
 }

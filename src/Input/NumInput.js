@@ -3,14 +3,14 @@ export class NumInput {
     input;
     disabled;
 
-    constructor(base, val, disabled=false, onClick=null) {
+    constructor(base, val, disabled = false, onClick = null) {
         this.base = base;
         this.disabled = disabled;
         // construct html framework
         let input = document.createElement('input');
         input.classList.add('num-input-input');
         if (disabled) {
-            input.classList.add('input-disabled')
+            input.classList.add('input-disabled');
         }
         input.disabled = disabled;
 
@@ -37,9 +37,9 @@ export class NumInput {
         this.disabled = !this.disabled;
         this.input.disabled = this.disabled;
         if (this.disabled) {
-            this.input.classList.add('input-disabled')
+            this.input.classList.add('input-disabled');
         } else {
-            this.input.classList.remove('input-disabled')
+            this.input.classList.remove('input-disabled');
         }
     }
 }

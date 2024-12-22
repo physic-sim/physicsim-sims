@@ -1,70 +1,96 @@
-import { ResetButton } from "../Controls/ResetButton";
-import { PauseButton } from "../Controls/PauseButton";
+import { ResetButton } from '../Controls/ResetButton';
+import { PauseButton } from '../Controls/PauseButton';
 
 export class Simulation {
+    rotateControl = true;
 
-	rotateControl = true;
+    constructor(
+        container,
+        inputs,
+        graphs,
+        controls,
+        attributes,
+        isStatic = false,
+    ) {
+        // add containers and pause functionality
+        this.paused = false;
+        this.container = container;
+        this.inputWrapper = inputs;
+        this.graphWrapper = graphs;
+        this.controlWrapper = controls;
+        this.attributeWrapper = attributes;
+        this.selected = 'graphs';
+        this.isStatic = isStatic;
+    }
 
-	constructor(container, inputs, graphs, controls, attributes) {
-		// add containers and pause functionality
-		this.paused = false;
-		this.container = container;
-		this.inputWrapper = inputs;
-		this.graphWrapper = graphs;
-		this.controlWrapper = controls;
-		this.attributeWrapper = attributes;
-		this.selected = 'graphs';
-	}
+    setup(p, stopLoading) {
+        // disable loading screen
+        stopLoading();
 
-	setup(p, stopLoading) {
-		stopLoading();
-		p.frameRate(30)
-		// make canvas
-		this.width = window.innerWidth;
-		this.height = window.innerHeight;
-		this.canvas = p.createCanvas(this.width, this.height, p.WEBGL, this.container);
+        p.frameRate(30);
 
-		this.paused = false;
+        // make canvas
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+        this.canvas = p.createCanvas(
+            this.width,
+            this.height,
+            p.WEBGL,
+            this.container,
+        );
 
-		// add basic controls
-		this.controlWrapper.innerHTML = '';
-		this.runBtn = new ResetButton(this.controlWrapper, (() => (this.setup(p, stopLoading))).bind(this));
-		this.pauseBtn = new PauseButton(this.controlWrapper, this.togglePause.bind(this))
+        this.paused = false;
 
-		this.init(p)
-	}
+        // add basic controls
+        this.controlWrapper.innerHTML = '';
+        this.runBtn = new ResetButton(
+            this.controlWrapper,
+            (() => this.setup(p, stopLoading)).bind(this),
+        );
 
-	init(p) {
-		// initial simulation logic
-		throw new Error('init() must be implemented by subclass')
-	}
+        // render pause button if simulation is continuous
+        if (!this.isStatic) {
+            this.pauseBtn = new PauseButton(
+                this.controlWrapper,
+                this.togglePause.bind(this),
+            );
+        }
 
-	draw(p) {
-		p.background(0);
-		this.frame(p);
-	}
+        // run simulation init code
+        this.init(p);
+    }
 
-	frame(p) {
-		// frame simulation logic
-		throw new Error('frame() must be implemented by subclass')
-	}
+    init(p) {
+        // initial simulation logic
+        throw new Error('init() must be implemented by subclass');
+    }
 
-	togglePause() {
-		this.paused = !this.paused;
-	}
+    draw(p) {
+        p.background(0);
+        this.frame(p);
+    }
 
-	handleResize(p) {
-		// resize sketch based on window change
-		this.width = window.innerWidth;
-		this.height = window.innerHeight;
-		p.resizeCanvas(this.width, this.height)
-	}
+    frame(p) {
+        // frame simulation logic
+        throw new Error('frame() must be implemented by subclass');
+    }
 
-	makeGraph() {
-		// return graph div with correct styling
-		let element = document.createElement('canvas');
-		this.graphWrapper.append(element);
-		element.classList.add('graph');
-		return element;
-	}
+    togglePause() {
+        this.paused = !this.paused;
+    }
+
+    handleResize(p) {
+        // resize sketch based on window change
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+        p.resizeCanvas(this.width, this.height);
+    }
+
+    makeGraph() {
+        // return graph div with correct styling
+        let element = document.createElement('canvas');
+        this.graphWrapper.append(element);
+        element.classList.add('graph');
+        return element;
+    }
 }
