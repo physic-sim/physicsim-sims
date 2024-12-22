@@ -10,10 +10,11 @@ let loadingTexts = [
     'Setting quantum state...',
     'Accelerating protons!',
     'Diffracting light...',
-    'Figuring out whether light is a wave or particle?..',
+    'Light: A wave or a particle?',
     'Checking conservation of momentum...',
     'Checking Newton\'s Laws...',
     'Reading up on Snell\'s Law...',
+    'Correcting for parallax...'
 ];
 
 function updateLoading(textElement) {
@@ -39,8 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // add additional control logic for the simulation
 function loadSim(Sim, title) {
-    p5.disableFriendlyErrors = true;
-
     // set header & tab title
     document.getElementById('header-title').innerHTML = title;
     document.getElementById('tab-title').innerHTML = `Physicsim (${title})`;
@@ -59,6 +58,9 @@ function loadSim(Sim, title) {
         p.draw = () => sketch.draw(p);
         p.windowResized = () => sketch.handleResize(p);
     });
+
+    // disable p5 error system
+    p.disableFriendlyErrors = true;
 
     // panel selector
     document.getElementById('graphs-selector').addEventListener('click', () => {
@@ -131,9 +133,11 @@ function loadSim(Sim, title) {
             sketch.rotateControl = true;
         });
 
-    document.getElementById('inputs-wrapper').addEventListener('scroll', () => {
-        sketch.rotateControl = false;
-    });
+    document
+        .getElementById('inputs-wrapper')
+        .addEventListener('scroll', () => {
+            sketch.rotateControl = false;
+        });
 
     document
         .getElementById('inputs-wrapper')
@@ -153,25 +157,15 @@ function loadSim(Sim, title) {
             sketch.rotateControl = true;
         });
 
-    document.getElementById('graphs-wrapper').addEventListener('scroll', () => {
-        sketch.rotateControl = false;
-    });
-
     document
         .getElementById('graphs-wrapper')
-        .addEventListener('scrollend', () => {
-            sketch.rotateControl = true;
-        });
-
-    document
-        .getElementById('inputs-wrapper')
-        .addEventListener('dragstart', () => {
+        .addEventListener('scroll', () => {
             sketch.rotateControl = false;
         });
 
     document
-        .getElementById('inputs-wrapper')
-        .addEventListener('dragend', () => {
+        .getElementById('graphs-wrapper')
+        .addEventListener('scrollend', () => {
             sketch.rotateControl = true;
         });
 
