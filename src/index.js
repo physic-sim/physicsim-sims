@@ -203,6 +203,12 @@ page('/snells-law', () => {
     );
 });
 
+page('/cyclotron', () => {
+    import('./Simulations/CyclotronSimulation').then(module => {
+        loadSim(module.default, 'Cyclotron');
+    })
+})
+
 page('*', () => {
     window.location.href = 'https://www.physicsim.co.uk';
 });
