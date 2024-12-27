@@ -14,7 +14,7 @@ let loadingTexts = [
     'Checking conservation of momentum...',
     'Checking Newton\'s Laws...',
     'Reading up on Snell\'s Law...',
-    'Correcting for parallax...'
+    'Correcting for parallax...',
 ];
 
 function updateLoading(textElement) {
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function loadSim(Sim, title) {
     // set header & tab title
     document.getElementById('header-title').innerHTML = title;
-    document.getElementById('tab-title').innerHTML = `Physicsim (${title})`;
+    document.getElementById('tab-title').innerHTML = `Physicsim (${title.split('(')[0].trim()})`;
 
     // init sketch
     const sketch = new Sim(
@@ -113,10 +113,10 @@ function loadSim(Sim, title) {
 
         if (header.style.display == 'none') {
             header.style.display = 'block';
-            btn.innerHTML = 'Hide';
+            btn.src = './static/prompt-close.png';
         } else {
             header.style.display = 'none';
-            btn.innerHTML = 'Show';
+            btn.src = './static/prompt-open.png';
         }
     });
 
@@ -133,11 +133,9 @@ function loadSim(Sim, title) {
             sketch.rotateControl = true;
         });
 
-    document
-        .getElementById('inputs-wrapper')
-        .addEventListener('scroll', () => {
-            sketch.rotateControl = false;
-        });
+    document.getElementById('inputs-wrapper').addEventListener('scroll', () => {
+        sketch.rotateControl = false;
+    });
 
     document
         .getElementById('inputs-wrapper')
@@ -157,11 +155,9 @@ function loadSim(Sim, title) {
             sketch.rotateControl = true;
         });
 
-    document
-        .getElementById('graphs-wrapper')
-        .addEventListener('scroll', () => {
-            sketch.rotateControl = false;
-        });
+    document.getElementById('graphs-wrapper').addEventListener('scroll', () => {
+        sketch.rotateControl = false;
+    });
 
     document
         .getElementById('graphs-wrapper')
@@ -204,10 +200,10 @@ page('/snells-law', () => {
 });
 
 page('/cyclotron', () => {
-    import('./Simulations/CyclotronSimulation').then(module => {
-        loadSim(module.default, 'Cyclotron');
-    })
-})
+    import('./Simulations/CyclotronSimulation').then((module) => {
+        loadSim(module.default, 'Cyclotron (Non-Relativistic)');
+    });
+});
 
 page('*', () => {
     window.location.href = 'https://www.physicsim.co.uk';

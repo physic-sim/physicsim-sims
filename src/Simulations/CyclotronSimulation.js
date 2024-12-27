@@ -1,10 +1,9 @@
-import { Simulation } from "./Simulation";
-import { ValueInput } from "../Input/ValueInput";
+import { Simulation } from './Simulation';
+import { ValueInput } from '../Input/ValueInput';
 import Chart from 'chart.js/auto';
-import p5 from "p5";
+import p5 from 'p5';
 
 export default class CyclotronSimulation extends Simulation {
-
     historyLimit = 500;
     pauseStart;
 
@@ -12,31 +11,43 @@ export default class CyclotronSimulation extends Simulation {
         super(container, inputs, graphs, controls, attributes);
 
         // add inputs
-        this.massInput = new ValueInput(this.inputWrapper, 1.7, 'Mass', 'x10<sup>-27</sup>/kg');
-        this.chargeInput = new ValueInput(this.inputWrapper, 1.6, 'Charge', 'x10<sup>-19</sup>/kg')
-        this.magInput = new ValueInput(this.inputWrapper, 1.2, 'Magnetic Flux Density', 'T');
-        this.pdInput = new ValueInput(this.inputWrapper, 10000, 'Potential Difference', 'V');
+        this.massInput = new ValueInput(
+            this.inputWrapper,
+            1.7,
+            'Mass',
+            'x10<sup>-27</sup>/kg',
+        );
+        this.chargeInput = new ValueInput(
+            this.inputWrapper,
+            1.6,
+            'Charge',
+            'x10<sup>-19</sup>/kg',
+        );
+        this.magInput = new ValueInput(
+            this.inputWrapper,
+            1.2,
+            'Magnetic Flux Density',
+            'T',
+        );
+        this.pdInput = new ValueInput(
+            this.inputWrapper,
+            10000,
+            'Potential Difference',
+            'V',
+        );
 
         // init data and graphs
         this.data = {};
         this.vGraph = this.makeGraph();
         this.pdGraph = this.makeGraph();
         this.sGraph = this.makeGraph();
-        this.vChart = this.initChart(
-            this.vGraph,
-            'Speed-Time',
-            'v (m/s)',
-        );
+        this.vChart = this.initChart(this.vGraph, 'Speed-Time', 'v (m/s)');
         this.pdChart = this.initChart(
             this.pdGraph,
             'Potential-Difference-Time',
             'V (V)',
         );
-        this.sChart = this.initChart(
-            this.sGraph,
-            'Displacement(x)-Time',
-            'm',
-        )
+        this.sChart = this.initChart(this.sGraph, 'Displacement(x)-Time', 'm');
     }
 
     init(p) {
@@ -67,7 +78,7 @@ export default class CyclotronSimulation extends Simulation {
         p.perspective(0.4, this.width / this.height, 10, 500000);
 
         p.background(0);
-    
+
         let t = (p.millis() - this.start) / 1000; // simulation time
         let T = (2 * Math.PI * this.m) / (this.q * this.B); // cyclotron period
         let gapTime = T / 2; // half-period for electric field
@@ -75,9 +86,11 @@ export default class CyclotronSimulation extends Simulation {
 
         // calculate speed due to electric field interaction
         let speed = 0;
-        
-        for (let i = 0; i < n+1; i++) {
-            speed = Math.sqrt((Math.pow(speed, 2)) + Math.abs(2*this.q*this.V/this.m));
+
+        for (let i = 0; i < n + 1; i++) {
+            speed = Math.sqrt(
+                Math.pow(speed, 2) + Math.abs((2 * this.q * this.V) / this.m),
+            );
         }
 
         if (!this.paused) {
@@ -87,7 +100,7 @@ export default class CyclotronSimulation extends Simulation {
             // magnetic force
             let b = p.createVector(0, this.B, 0);
             let perpendicular = p5.Vector.cross(this.v, b).normalize();
-            let aMag = speed * this.B * this.q / this.m;
+            let aMag = (speed * this.B * this.q) / this.m;
             let aVec = p5.Vector.mult(perpendicular, aMag / p.frameRate());
             this.v.add(aVec);
 
@@ -107,10 +120,17 @@ export default class CyclotronSimulation extends Simulation {
         p.strokeWeight(0.25);
         for (let i = 0; i < this.history.length - 1; i++) {
             p.push();
-            p.line(this.history[i].x, this.history[i].y, this.history[i].z, this.history[i+1].x, this.history[i+1].y, this.history[i+1].z)
+            p.line(
+                this.history[i].x,
+                this.history[i].y,
+                this.history[i].z,
+                this.history[i + 1].x,
+                this.history[i + 1].y,
+                this.history[i + 1].z,
+            );
             p.pop();
         }
-        
+
         // draw particle
         p.push();
         p.noStroke();
@@ -118,11 +138,11 @@ export default class CyclotronSimulation extends Simulation {
         if (this.q > 0) {
             p.fill(0, 255, 0);
         } else {
-            p.fill(255, 0, 0)
+            p.fill(255, 0, 0);
         }
-        
+
         p.translate(this.pos);
-        p.sphere(1, 24, 24)
+        p.sphere(1, 24, 24);
         p.pop();
 
         // add data
@@ -138,11 +158,13 @@ export default class CyclotronSimulation extends Simulation {
         if (!this.paused) {
             this.data.t.push(time * 1e-8);
             this.data.v.push(this.v.mag() * 1e5);
-            let pd = this.V * 100 * p.cos(((2*Math.PI) / T) * (p.millis() - this.start) / 1000)
+            let pd =
+                this.V *
+                100 *
+                p.cos((((2 * Math.PI) / T) * (p.millis() - this.start)) / 1000);
             this.data.pd.push(pd);
-            this.data.s.push(this.pos.x * 1e-3)
+            this.data.s.push(this.pos.x * 1e-3);
         }
-
 
         if (this.selected == 'graphs') {
             this.graph();
@@ -159,7 +181,6 @@ export default class CyclotronSimulation extends Simulation {
         } else {
             this.start = this.start + (Date.now() - this.pauseStart);
         }
-        
     }
 
     graph() {
@@ -246,5 +267,4 @@ export default class CyclotronSimulation extends Simulation {
 			v = ${(this.v.mag().toFixed(0) * 1e5).toFixed(0)} m/s <br>
 	  	`;
     }
-
 }

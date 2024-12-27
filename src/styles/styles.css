@@ -331,7 +331,7 @@ input[type="range"].slider-input-slider::-webkit-slider-thumb:active {
     padding-left: .25em;
     padding-right: .25em;
     text-align: center;
-    border-bottom: 2px solid #9a9a9a;
+    border-bottom: 2px solid var(--alt-purple);
 }
 
 .inputs-prompt {
@@ -348,20 +348,21 @@ input[type="range"].slider-input-slider::-webkit-slider-thumb:active {
 
 .inputs-header-hide-btn {
     position: relative;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    background-color: #9a9a9a;
+    background-color: var(--alt-purple);
     outline: none;
     border: none;
-    padding: .75em 1em 1em 1em;
+    padding: .5em;
     color: #fff;
-    border-radius: 0 0 2em 2em;
+    border-radius: 0 0 1em 1em;
     transition: background-color 500ms;
 }
 
 .inputs-header-hide-btn:hover {
-    background-color: var(--alt-green);
+    background-color: var(--alt-red);
+}
+
+.inputs-header-hide-btn-icon {
+    width: 1.5em;
 }
 
 .inputs-container {

@@ -47,12 +47,11 @@ export class Ray {
                     let nDotDir = p5.Vector.dot(this.dir, n);
                     let t = pTakeSrcDotN / nDotDir;
 
-					if (Math.abs(t) == Infinity) {
-						continue;
-					}
+                    if (Math.abs(t) == Infinity) {
+                        continue;
+                    }
 
                     let tDir = p5.Vector.mult(this.dir, t);
-					
 
                     // Check if the calculated point lies on the plane
                     let x = p5.Vector.add(this.src, tDir);

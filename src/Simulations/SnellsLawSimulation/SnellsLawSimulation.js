@@ -123,7 +123,7 @@ export default class SnellsLawSimulation extends Simulation {
                 40,
                 p.createVector(0, 0, 0),
                 this.nInput.get(),
-            ),
+            )
         );
     }
 
