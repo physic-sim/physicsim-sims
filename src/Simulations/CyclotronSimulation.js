@@ -21,7 +21,7 @@ export default class CyclotronSimulation extends Simulation {
             this.inputWrapper,
             1.6,
             'Charge',
-            'x10<sup>-19</sup>/kg',
+            'x10<sup>-19</sup>/C',
         );
         this.magInput = new ValueInput(
             this.inputWrapper,
