@@ -159,8 +159,6 @@ export default class CollisionsSimulation extends Simulation {
 
             this.particleA.edges(this.size);
             this.particleB.edges(this.size);
-        } else {
-            console.log('paused');
         }
 
         this.particleA.show(p);

@@ -75,8 +75,13 @@ export class Simulation {
         throw new Error('frame() must be implemented by subclass');
     }
 
-    togglePause() {
-        this.paused = !this.paused;
+    togglePause(paused=null) {
+
+        if (typeof(paused) !== Boolean) {
+            paused = !this.paused;
+        }
+
+        this.paused = paused;
     }
 
     handleResize(p) {

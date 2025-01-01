@@ -164,6 +164,15 @@ function loadSim(Sim, title) {
         .addEventListener('scrollend', () => {
             sketch.rotateControl = true;
         });
+    
+    // play / pause simulation based on visibility API
+    document.addEventListener('visibilitychange', (e) => {
+        if (document.visibilityState == 'visible') {
+            sketch.togglePause(false);
+        } else {
+            sketch.togglePause(true);
+        }
+    })
 
     // update frame-rate
     setInterval(() => {

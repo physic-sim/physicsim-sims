@@ -86,33 +86,33 @@ export default class CyclotronSimulation extends Simulation {
         let n = Math.abs(Math.floor(t / gapTime)) + 1; // number of half-cycles
         let r = t % gapTime; // remainder
 
-        // calculate speed due to electric field interaction
-        let v0 = this.getSpeed(n-1);
-        let v = this.getSpeed(n);
-        let vP = this.getSpeed(n+1);
-
-        // for first transition
-        let deltaV = v - v0;
-        let tInE = (this.d * this.m * deltaV) / (this.V * this.q);
-        
-        // for second transition
-        let deltaVP = vP - v;
-        let tInEP = (this.d * this.m * deltaVP) / (this.V * this.q);
-
-        let speed;
-
-        if (r <= (tInE / 2)) {
-            let sf = (r / tInE) + 0.5
-            speed = v0 + (sf * deltaV);
-        } else if (r >= (gapTime - (tInEP / 2))) {
-            let sf = (r - (gapTime - (tInEP / 2))) / tInEP;
-            speed = v + (sf * deltaVP);
-        } else {
-            speed = v;
-        }
-        
-
         if (!this.paused) {
+
+            // calculate speed due to electric field interaction
+            let v0 = this.getSpeed(n-1);
+            let v = this.getSpeed(n);
+            let vP = this.getSpeed(n+1);
+
+            // for first transition
+            let deltaV = v - v0;
+            let tInE = (this.d * this.m * deltaV) / (this.V * this.q);
+            
+            // for second transition
+            let deltaVP = vP - v;
+            let tInEP = (this.d * this.m * deltaVP) / (this.V * this.q);
+
+            let speed;
+
+            if (r <= (tInE / 2)) {
+                let sf = (r / tInE) + 0.5
+                speed = v0 + (sf * deltaV);
+            } else if (r >= (gapTime - (tInEP / 2))) {
+                let sf = (r - (gapTime - (tInEP / 2))) / tInEP;
+                speed = v + (sf * deltaVP);
+            } else {
+                speed = v;
+            }
+        
             // update velocity magnitude
             this.v.setMag(speed);
 
@@ -120,11 +120,11 @@ export default class CyclotronSimulation extends Simulation {
             let b = p.createVector(0, this.B, 0);
             let perpendicular = p5.Vector.cross(this.v, b).normalize();
             let aMag = (speed * this.B * this.q) / this.m;
-            let aVec = p5.Vector.mult(perpendicular, aMag / p.frameRate());
+            let aVec = p5.Vector.mult(perpendicular, aMag / p.getTargetFrameRate());
             this.v.add(aVec);
 
             // update position
-            this.pos.add(p5.Vector.mult(this.v, 1 / p.frameRate()));
+            this.pos.add(p5.Vector.mult(this.v, 1 / p.getTargetFrameRate()));
 
             // update history
             this.history.push(this.pos.copy());
@@ -192,8 +192,13 @@ export default class CyclotronSimulation extends Simulation {
         this.updateAttributes();
     }
 
-    togglePause() {
-        this.paused = !this.paused;
+    togglePause(paused=null) {
+
+        if (typeof(paused) !== Boolean) {
+            paused = !this.paused;
+        }
+
+        this.paused = paused;
 
         if (this.paused) {
             this.pauseStart = Date.now();
