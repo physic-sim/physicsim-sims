@@ -134,18 +134,18 @@ export default class CyclotronSimulation extends Simulation {
         }
 
         // draw history
-        this.historyLimit = 10 * p.frameRate();
+        this.historyLimit = 20 * p.frameRate();
         p.stroke(200);
         p.strokeWeight(0.25);
-        for (let i = 0; i < this.history.length - 1; i++) {
+        for (let i = 0; i < this.history.length - 3; i+=3) {
             p.push();
             p.line(
                 this.history[i].x,
                 this.history[i].y,
                 this.history[i].z,
-                this.history[i + 1].x,
-                this.history[i + 1].y,
-                this.history[i + 1].z,
+                this.history[i + 3].x,
+                this.history[i + 3].y,
+                this.history[i + 3].z,
             );
             p.pop();
         }
