@@ -6,6 +6,7 @@ import p5 from 'p5';
 export default class CyclotronSimulation extends Simulation {
     historyLimit = 500;
     pauseStart;
+    d = 10;
 
     constructor(container, inputs, graphs, controls, attributes) {
         super(container, inputs, graphs, controls, attributes);
@@ -82,16 +83,34 @@ export default class CyclotronSimulation extends Simulation {
         let t = (p.millis() - this.start) / 1000; // simulation time
         let T = (2 * Math.PI * this.m) / (this.q * this.B); // cyclotron period
         let gapTime = T / 2; // half-period for electric field
-        let n = Math.abs(Math.floor(t / gapTime)); // number of half-cycles
+        let n = Math.abs(Math.floor(t / gapTime)) + 1; // number of half-cycles
+        let r = t % gapTime; // remainder
 
         // calculate speed due to electric field interaction
-        let speed = 0;
+        let v0 = this.getSpeed(n-1);
+        let v = this.getSpeed(n);
+        let vP = this.getSpeed(n+1);
 
-        for (let i = 0; i < n + 1; i++) {
-            speed = Math.sqrt(
-                Math.pow(speed, 2) + Math.abs((2 * this.q * this.V) / this.m),
-            );
+        // for first transition
+        let deltaV = v - v0;
+        let tInE = (this.d * this.m * deltaV) / (this.V * this.q);
+        
+        // for second transition
+        let deltaVP = vP - v;
+        let tInEP = (this.d * this.m * deltaVP) / (this.V * this.q);
+
+        let speed;
+
+        if (r <= (tInE / 2)) {
+            let sf = (r / tInE) + 0.5
+            speed = v0 + (sf * deltaV);
+        } else if (r >= (gapTime - (tInEP / 2))) {
+            let sf = (r - (gapTime - (tInEP / 2))) / tInEP;
+            speed = v + (sf * deltaVP);
+        } else {
+            speed = v;
         }
+        
 
         if (!this.paused) {
             // update velocity magnitude
@@ -266,5 +285,11 @@ export default class CyclotronSimulation extends Simulation {
         this.attributeWrapper.innerHTML = `
 			v = ${(this.v.mag().toFixed(0) * 1e5).toFixed(0)} m/s <br>
 	  	`;
+    }
+
+    getSpeed(n) {
+        return Math.sqrt(
+            (2 * n * this.V * this.q) / this.m
+        )
     }
 }
