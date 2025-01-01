@@ -81,7 +81,7 @@ export default class CyclotronSimulation extends Simulation {
         p.background(0);
 
         let t = (p.millis() - this.start) / 1000; // simulation time
-        let T = (2 * Math.PI * this.m) / (this.q * this.B); // cyclotron period
+        let T = Math.abs((2 * Math.PI * this.m) / (this.q * this.B)); // cyclotron period
         let gapTime = T / 2; // half-period for electric field
         let n = Math.abs(Math.floor(t / gapTime)) + 1; // number of half-cycles
         let r = t % gapTime; // remainder
@@ -95,11 +95,11 @@ export default class CyclotronSimulation extends Simulation {
 
             // for first transition
             let deltaV = v - v0;
-            let tInE = (this.d * this.m * deltaV) / (this.V * this.q);
+            let tInE = Math.abs((this.d * this.m * deltaV) / (this.V * this.q));
             
             // for second transition
             let deltaVP = vP - v;
-            let tInEP = (this.d * this.m * deltaVP) / (this.V * this.q);
+            let tInEP = Math.abs((this.d * this.m * deltaVP) / (this.V * this.q));
 
             let speed;
 
@@ -294,7 +294,7 @@ export default class CyclotronSimulation extends Simulation {
 
     getSpeed(n) {
         return Math.sqrt(
-            (2 * n * this.V * this.q) / this.m
+            (2 * n * Math.abs(this.V) * Math.abs(this.q)) / this.m
         )
     }
 }
