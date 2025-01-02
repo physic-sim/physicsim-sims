@@ -116,7 +116,7 @@ export default class CollisionsSimulation extends Simulation {
 
         // init particles
         this.particleA = new Particle(
-            this.massA.get(),
+            Math.abs(this.massA.get()),
             this.posA.get(),
             this.velA.get(),
             166,
@@ -124,7 +124,7 @@ export default class CollisionsSimulation extends Simulation {
             111,
         );
         this.particleB = new Particle(
-            this.massB.get(),
+            Math.abs(this.massB.get()),
             this.posB.get(),
             this.velB.get(),
             156,

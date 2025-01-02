@@ -81,7 +81,7 @@ export default class ProjectileSimulation extends Simulation {
         // init particle
         this.a = p.createVector(0, this.G, 0);
         this.particle = new Particle(
-            this.mass.get(),
+            Math.abs(this.mass.get()),
             this.s.get(),
             this.u.get(),
             p.createVector(0, this.G, 0),
@@ -262,6 +262,11 @@ class Particle {
     }
 
     update(p, e) {
+        // massless objects don't experience gravity
+        if (this.mass == 0) {
+            return;
+        }
+
         // compute new position
         let uT = p5.Vector.mult(this.vel, 1 / p.getTargetFrameRate());
         let aTSquared = p5.Vector.mult(

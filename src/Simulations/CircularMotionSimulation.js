@@ -99,8 +99,8 @@ export default class CircularMotionSimulation extends Simulation {
         this.start = p.millis();
 
         // init position
-        this.r = this.rInput.get() * this.sf;
-        this.mass = this.massInput.get();
+        this.r = Math.abs(this.rInput.get() * this.sf);
+        this.mass = Math.abs(this.massInput.get());
         if (this.angularPref) {
             this.v = new p5.Vector(0, 0, this.omegaInput.get() * this.r);
             this.vInput.set((this.v.z / this.sf).toFixed(2));

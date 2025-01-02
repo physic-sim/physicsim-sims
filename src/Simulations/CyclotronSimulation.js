@@ -53,7 +53,7 @@ export default class CyclotronSimulation extends Simulation {
 
     init(p) {
         // load inputs & do scaling
-        this.m = this.massInput.get();
+        this.m = Math.abs(this.massInput.get());
         this.q = this.chargeInput.get();
         this.B = this.magInput.get();
         this.V = this.pdInput.get() / 100;
