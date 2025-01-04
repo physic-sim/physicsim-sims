@@ -67,7 +67,7 @@ export default class CollisionsSimulation extends Simulation {
             0,
             1,
             0.01,
-            'Coeffecient of Resitution',
+            'Coeffecient of Restitution Between Particles',
             '',
         );
 
