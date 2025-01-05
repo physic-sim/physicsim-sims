@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // add additional control logic for the simulation
-function loadSim(Sim, title) {
+function loadSim(Sim, title, hasControls=true, hasGraphs=true) {
     // set header & tab title
     document.getElementById('header-title').innerHTML = title;
     document.getElementById('tab-title').innerHTML = `Physicsim (${title.split('(')[0].trim()})`;
@@ -105,6 +105,15 @@ function loadSim(Sim, title) {
             sketch.selected = 'inputs';
         }
     });
+
+    // remove / add buttons based on sim settings
+    if (hasControls == false) {
+        document.getElementById('inputs-selector').style.display = 'none';
+    }
+
+    if (hasGraphs == false) {
+        document.getElementById('graphs-selector').style.display = 'none';
+    }
 
     // prompt hider
     document.getElementById('hide-btn').addEventListener('click', () => {
@@ -213,6 +222,12 @@ page('/cyclotron', () => {
         loadSim(module.default, 'Cyclotron (Non-Relativistic)');
     });
 });
+
+page('/alpha-scattering', () => {
+    import('./Simulations/ScatteringSimulation').then((module) => {
+        loadSim(module.default, 'Alpha Particle Scattering', true, false);
+    });
+})
 
 page('*', () => {
     window.location.href = 'https://www.physicsim.co.uk';
