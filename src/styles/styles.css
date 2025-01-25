@@ -435,8 +435,9 @@ input[type="range"].slider-input-slider::-webkit-slider-thumb:active {
 
 .attr-wrapper {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: small;
+    font-size: 15px;
     color: #c6c6c6;
+    width: max-content;
 }
 
 @media (max-width: 768px) {
@@ -457,5 +458,11 @@ input[type="range"].slider-input-slider::-webkit-slider-thumb:active {
     .ctrl-wrapper--left {
         padding-top: 5em;
         justify-content: flex-start;
+    }
+
+    .attr-wrapper {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: small;
+        color: #c6c6c6;
     }
 }
