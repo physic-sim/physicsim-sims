@@ -1,5 +1,6 @@
 import { Simulation } from "./Simulation";
 import { ValueInput } from "../Input/ValueInput";
+import { SliderInput } from '../Input/SliderInput'
 import p5 from 'p5';
 
 export default class ScatteringSimulation extends Simulation {
@@ -10,7 +11,7 @@ export default class ScatteringSimulation extends Simulation {
     e = 1.60217663e-19;
 
     // sim constants
-    n = 6;
+    n = 4;
     h = 150;
     w = 150;
 
@@ -32,6 +33,17 @@ export default class ScatteringSimulation extends Simulation {
             'x10<sup>7</sup>/ms<sup>-1</sup>'
         )
 
+        this.sizeInput = new SliderInput(
+          this.inputWrapper,
+          this.n,
+          0,
+          6,
+          1,
+          'No. Alpha Particles',
+          '',
+          false
+        )
+
     }
 
     init(p) {
@@ -39,6 +51,7 @@ export default class ScatteringSimulation extends Simulation {
         this.u = this.uInput.get() * 10;
         let protonNumber = Math.floor(Math.abs(this.mInput.get()));
         this.alphas = []
+        this.n = this.sizeInput.get();
 
         // init sim variables
         this.nucleus = new Charge(
@@ -50,10 +63,13 @@ export default class ScatteringSimulation extends Simulation {
         );
 
         // add electrons
-        for (let i = -this.h/2; i <= this.h/2; i += (Math.abs(this.h/this.n))) {
-            for (let j = -this.w/2; j <= this.w/2; j += (Math.abs(this.w/this.n))) {        
+        let useH = this.h / 6 * this.n;
+        let useW = this.w / 6 * this.n;
+
+        for (let i = -useH/2; i <= useH/2; i += (Math.abs(this.h/6))) {
+            for (let j = -useW/2; j <= useW/2; j += (Math.abs(this.w/6))) {        
               this.alphas.push(
-                new Charge(2*this.mp, 2*this.e, p.createVector(-100, i, j), p.createVector(this.u, 0, 0), p.createVector(0, 0, 0))
+                new Charge(2*this.mp, 2*this.e, p.createVector(-100, -i, j), p.createVector(this.u, 0, 0), p.createVector(0, 0, 0))
               );
             }
         
