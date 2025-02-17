@@ -68,9 +68,11 @@ page('/2/nuclear-decay', () => {
     )
 });
 
+/*
 page('*', () => {
     window.location.href = 'https://physicsim.co.uk';
 })
+*/
 
 // start router
 page();
