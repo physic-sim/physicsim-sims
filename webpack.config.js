@@ -40,6 +40,7 @@ module.exports = {
             patterns: [
                 { from: './src/static/robots.txt', to: 'robots.txt' },
                 { from: './src/static', to: 'static' }, 
+                { from: './src/static/_redirects', to: '_redirects'}
             ],
         }),
     ],
