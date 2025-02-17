@@ -1,9 +1,9 @@
-import { Simulation } from './Simulation';
+import { ThreeDSimulation } from "./ThreeDSimulation";
 import { ValueInput } from '../Input/ValueInput';
 import Chart from 'chart.js/auto';
 import p5 from 'p5';
 
-export default class CyclotronSimulation extends Simulation {
+export default class CyclotronSimulation extends ThreeDSimulation {
     historyLimit = 500;
     pauseStart;
     d = 10;

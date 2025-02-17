@@ -1,10 +1,10 @@
-import { Simulation } from '../Simulation';
+import { ThreeDSimulation } from "../ThreeDSimulation";
 import { Button } from '../../Controls/Button';
 import { SliderInput } from '../../Input/SliderInput';
 import { Ray } from './Ray';
 import { BoxGeometry } from './BoxGeometry';
 
-export default class SnellsLawSimulation extends Simulation {
+export default class SnellsLawSimulation extends ThreeDSimulation {
     UNCERTAINTY = 1e-6;
 
     constructor(container, inputs, graphs, controls, attributes) {

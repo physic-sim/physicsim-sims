@@ -1,11 +1,11 @@
-import { Simulation } from './Simulation';
+import { ThreeDSimulation } from "./ThreeDSimulation";
 import { ValueInput } from '../Input/ValueInput';
 import { VectorInput } from '../Input/VectorInput';
 import { SliderInput } from '../Input/SliderInput';
 import Chart from 'chart.js/auto';
 import p5 from 'p5';
 
-export default class ProjectileSimulation extends Simulation {
+export default class ProjectileSimulation extends ThreeDSimulation {
     e = 1;
     G = 9.81;
     size = 250;

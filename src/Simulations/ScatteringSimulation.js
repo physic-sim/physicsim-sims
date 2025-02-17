@@ -1,9 +1,9 @@
-import { Simulation } from "./Simulation";
+import { ThreeDSimulation } from "./ThreeDSimulation";
 import { ValueInput } from "../Input/ValueInput";
 import { SliderInput } from '../Input/SliderInput'
 import p5 from 'p5';
 
-export default class ScatteringSimulation extends Simulation {
+export default class ScatteringSimulation extends ThreeDSimulation {
 
     // physical constants
     me = 9.1093837e-31;

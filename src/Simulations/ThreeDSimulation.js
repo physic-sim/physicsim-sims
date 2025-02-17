@@ -1,7 +1,7 @@
 import { ResetButton } from '../Controls/ResetButton';
 import { PauseButton } from '../Controls/PauseButton';
 
-export class Simulation {
+export class ThreeDSimulation {
     rotateControl = true;
 
     constructor(
