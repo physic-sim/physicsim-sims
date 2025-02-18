@@ -1,4 +1,4 @@
-import { Simulation } from './Simulation';
+import { ThreeDSimulation } from "./ThreeDSimulation";
 import { ValueInput } from '../Input/ValueInput';
 import { VectorInput } from '../Input/VectorInput';
 import { SliderInput } from '../Input/SliderInput';
@@ -6,7 +6,7 @@ import { Button } from '../Controls/Button';
 import Chart from 'chart.js/auto';
 import p5 from 'p5';
 
-export default class CollisionsSimulation extends Simulation {
+export default class CollisionsSimulation extends ThreeDSimulation {
     size = 10;
     e = 1;
     sf = 10;

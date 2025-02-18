@@ -1,10 +1,10 @@
-import { Simulation } from './Simulation';
+import { ThreeDSimulation } from "./ThreeDSimulation";
 import { ValueInput } from '../Input/ValueInput';
 import { Button } from '../Controls/Button';
 import Chart from 'chart.js/auto';
 import p5 from 'p5';
 
-export default class CircularMotionSimulation extends Simulation {
+export default class CircularMotionSimulation extends ThreeDSimulation {
     rotationalRef = false;
     angularPref = false;
     sf = 10;

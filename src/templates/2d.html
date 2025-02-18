@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="stylesheet" href="https://fontlibrary.org/en/face/cmu-serif"/>
     <link rel="stylesheet" href="https://use.typekit.net/fxw2jrd.css">
-    <link rel="stylesheet" href="./static/quickstyles.css">
+    <link rel="stylesheet" href="/static/quickstyles.css">
     <link rel="apple-touch-icon" sizes="57x57" href="https://physicsim.co.uk/assets/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="https://physicsim.co.uk/assets/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="https://physicsim.co.uk/assets/apple-icon-72x72.png">
@@ -25,41 +25,25 @@
 <body id="body">
     <div class="loading-wrapper">
         <div class="loading-container">
-            <img class="loading-logo" src="./static/logo-header.png">
+            <img class="loading-logo" src="/static/logo-header.png">
             <h1 class="loading-txt" id="loading-txt">Loading...</h1>
         </div>
     </div>
     <div class="header-wrapper">
         <a href="https://physicsim.co.uk">
-            <img class="header-logo" src="./static/logo-header.png">
+            <img class="header-logo" src="/static/logo-header.png">
         </a>
         <h1 class="header-title" id="header-title"></h1>
     </div>
-    <div class="ctrl-wrapper--bottom" id="ctrls--bottom">
+    <div class="sim-wrapper">
+        <canvas id="sim-wrapper"></canvas>
     </div>
-    <canvas class="sketch-wrapper" id="sketch"></canvas>
-    <div class="ctrl-wrapper--left">
-        <p id="attr-wrapper" class="attr-wrapper"></p>
-        <p id="frame-rate" class="frame-rate"></p>
-        <button class="btn-toggle btn-toggle--selected" id="inputs-selector">Controls</button>
-        <button class="btn-toggle" id="graphs-selector">Graphs</button>
+    <div class="ctrl-wrapper" id="ctrl-wrapper"></div>
+    <div class="description-wrapper" id="description-wrapper">
+        <p>Change the values below and press reset to start a new simulation. </p>
+        <p id="description"></p>
     </div>
-    <div class="inputs-wrapper" id="inputs-wrapper">
-        <div class="inputs-header-wrapper" id="header-wrapper">
-            <p class="inputs-header">Controls</p>
-            <div class="inputs-prompt">
-                Hold down left click to pan and use your touchpad or mouse wheel to zoom. Use your right click to change centre of rotation. Vector inputs represent x, y and z as shown:
-                <img class="inputs-prompt-img-axis" src="./static/axis.png">
-                Toggle the control panel and graphs panel using the buttons on the left. 
-                <br>
-                Press Reset to centre camera view and apply new settings.
-            </div>
-            <br>
-        </div>
-        <button class="inputs-header-hide-btn"><img class="inputs-header-hide-btn-icon" id="hide-btn" src="static/prompt-close.png"></button>
-        <div id="inputs-container" class="inputs-container"></div>
-    </div>
-    <div class="graphs-wrapper" id="graphs-wrapper" style="opacity: 0; z-index: -1;">
-    </div>
+    <div class="inputs-wrapper" id="inputs-wrapper"></div>
+    <div class="attr-wrapper" id="attr-wrapper"></div>
 </body>
 </html>
