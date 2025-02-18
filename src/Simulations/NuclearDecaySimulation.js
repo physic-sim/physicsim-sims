@@ -143,7 +143,9 @@ export default class NuclearDecaySimulation extends TwoDSimulation {
                 this.step();
             }, (this.dt * 1e3));
         } else {
-            while (this.n0 * Math.pow(Math.E, -this.lambda * this.t) >= 0.5) {
+            let time = (Math.log(0.5/this.n0)/(-this.lambda * Math.log(Math.E)));
+            this.dt = time / 100;
+            while (this.t < time) {
                 this.step();
             }
             this.paused = true;
