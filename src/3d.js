@@ -240,11 +240,10 @@ page('/3/alpha-scattering', () => {
     });
 })
 
-/*
 page('*', () => {
     window.location.href = 'https://physicsim.co.uk';
 })
-*/
+
 
 
 // start router
