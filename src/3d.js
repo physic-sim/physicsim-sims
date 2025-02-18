@@ -123,10 +123,10 @@ function loadSim(Sim, title, hasControls=true, hasGraphs=true) {
 
         if (header.style.display == 'none') {
             header.style.display = 'block';
-            btn.src = '../static/prompt-close.png';
+            btn.src = '/static/prompt-close.png';
         } else {
             header.style.display = 'none';
-            btn.src = '../static/prompt-open.png';
+            btn.src = '/static/prompt-open.png';
         }
     });
 
