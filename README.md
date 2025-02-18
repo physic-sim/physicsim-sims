@@ -2,6 +2,8 @@
 
 **Welcome to PHYSICSim (Sim Library)**
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/3b88d201-6a68-48f3-879c-d700ac1e20f1/deploy-status)](https://app.netlify.com/sites/physicsim/deploys)
+
 This repository is the home of all simulations written for Physicsim. It also contains the custom input library that forms the input panel.
 
 This repository makes use of the following libraries:
