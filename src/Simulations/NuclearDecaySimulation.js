@@ -11,7 +11,6 @@ export default class NuclearDecaySimulation extends TwoDSimulation {
         attributes,
     ) {
         super(container, inputs, controls, attributes);
-        console.log(container);
         // add inputs
         this.nInput = new ValueInput(
             this.inputWrapper,
