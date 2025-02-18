@@ -1,3 +1,4 @@
+import { CheckBoxInput } from '../Input/CheckBoxInput';
 import { ValueInput } from '../Input/ValueInput';
 import { TwoDSimulation } from './TwoDSimulation';
 import Chart from 'chart.js/auto';
@@ -30,6 +31,11 @@ export default class NuclearDecaySimulation extends TwoDSimulation {
             'dt',
             '/s Time Interval'
         )
+        this.realTimeInput = new CheckBoxInput(
+            this.inputWrapper,
+            true,
+            'Simulate Real Time'
+        )
     }
 
     init() {
@@ -43,6 +49,11 @@ export default class NuclearDecaySimulation extends TwoDSimulation {
         // clear current chart if present
         if (this.chart) {
             this.chart.destroy();
+        }
+
+        // clear current interval if present
+        if (this.interval) {
+            clearInterval(this.interval);
         }
 
         this.chart = new Chart(
@@ -126,11 +137,18 @@ export default class NuclearDecaySimulation extends TwoDSimulation {
             }
         )
 
-
-        this.step();
-        setInterval(() => {
+        if (this.realTimeInput.get()) {
             this.step();
-        }, (this.dt * 1e3));
+            this.interval = setInterval(() => {
+                this.step();
+            }, (this.dt * 1e3));
+        } else {
+            while (this.n0 * Math.pow(Math.E, -this.lambda * this.t) >= 0.5) {
+                this.step();
+            }
+            this.paused = true;
+        }
+
     }
 
     step() { // step forward in simulation every dt
