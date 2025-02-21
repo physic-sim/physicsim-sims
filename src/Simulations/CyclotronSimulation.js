@@ -1,4 +1,4 @@
-import { ThreeDSimulation } from "./ThreeDSimulation";
+import { ThreeDSimulation } from './ThreeDSimulation';
 import { ValueInput } from '../Input/ValueInput';
 import Chart from 'chart.js/auto';
 import p5 from 'p5';
@@ -87,32 +87,33 @@ export default class CyclotronSimulation extends ThreeDSimulation {
         let r = t % gapTime; // remainder
 
         if (!this.paused) {
-
             // calculate speed due to electric field interaction
-            let v0 = this.getSpeed(n-1);
+            let v0 = this.getSpeed(n - 1);
             let v = this.getSpeed(n);
-            let vP = this.getSpeed(n+1);
+            let vP = this.getSpeed(n + 1);
 
             // for first transition
             let deltaV = v - v0;
             let tInE = Math.abs((this.d * this.m * deltaV) / (this.V * this.q));
-            
+
             // for second transition
             let deltaVP = vP - v;
-            let tInEP = Math.abs((this.d * this.m * deltaVP) / (this.V * this.q));
+            let tInEP = Math.abs(
+                (this.d * this.m * deltaVP) / (this.V * this.q),
+            );
 
             let speed;
 
-            if (r <= (tInE / 2)) {
-                let sf = (r / tInE) + 0.5
-                speed = v0 + (sf * deltaV);
-            } else if (r >= (gapTime - (tInEP / 2))) {
-                let sf = (r - (gapTime - (tInEP / 2))) / tInEP;
-                speed = v + (sf * deltaVP);
+            if (r <= tInE / 2) {
+                let sf = r / tInE + 0.5;
+                speed = v0 + sf * deltaV;
+            } else if (r >= gapTime - tInEP / 2) {
+                let sf = (r - (gapTime - tInEP / 2)) / tInEP;
+                speed = v + sf * deltaVP;
             } else {
                 speed = v;
             }
-        
+
             // update velocity magnitude
             this.v.setMag(speed);
 
@@ -120,7 +121,10 @@ export default class CyclotronSimulation extends ThreeDSimulation {
             let b = p.createVector(0, this.B, 0);
             let perpendicular = p5.Vector.cross(this.v, b).normalize();
             let aMag = (speed * this.B * this.q) / this.m;
-            let aVec = p5.Vector.mult(perpendicular, aMag / p.getTargetFrameRate());
+            let aVec = p5.Vector.mult(
+                perpendicular,
+                aMag / p.getTargetFrameRate(),
+            );
             this.v.add(aVec);
 
             // update position
@@ -137,7 +141,7 @@ export default class CyclotronSimulation extends ThreeDSimulation {
         this.historyLimit = 20 * p.frameRate();
         p.stroke(200);
         p.strokeWeight(0.25);
-        for (let i = 0; i < this.history.length - 3; i+=3) {
+        for (let i = 0; i < this.history.length - 3; i += 3) {
             p.push();
             p.line(
                 this.history[i].x,
@@ -192,9 +196,8 @@ export default class CyclotronSimulation extends ThreeDSimulation {
         this.updateAttributes();
     }
 
-    togglePause(paused=null) {
-
-        if (typeof(paused) !== Boolean) {
+    togglePause(paused = null) {
+        if (typeof paused !== Boolean) {
             paused = !this.paused;
         }
 
@@ -295,6 +298,6 @@ export default class CyclotronSimulation extends ThreeDSimulation {
     getSpeed(n) {
         return Math.sqrt(
             (2 * n * Math.abs(this.V) * Math.abs(this.q)) / this.m
-        )
+        );
     }
 }

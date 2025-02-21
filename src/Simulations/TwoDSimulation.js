@@ -2,13 +2,13 @@ import { ResetButton } from '../Controls/ResetButton';
 import { PauseButton } from '../Controls/PauseButton';
 
 export class TwoDSimulation {
-
     constructor(
         container,
         inputs,
         controls,
         attributes,
         isStatic = false,
+        noReset = false
     ) {
         // add containers and pause functionality
         this.paused = false;
@@ -17,6 +17,7 @@ export class TwoDSimulation {
         this.controlWrapper = controls;
         this.attributeWrapper = attributes;
         this.isStatic = isStatic;
+        this.noReset = noReset;
     }
 
     setup(stopLoading) {
@@ -28,10 +29,13 @@ export class TwoDSimulation {
 
         // add basic controls
         this.controlWrapper.innerHTML = '';
-        this.runBtn = new ResetButton(
-            this.controlWrapper,
-            (() => this.setup(stopLoading)).bind(this),
-        );
+
+        if (!this.noReset) {
+            this.runBtn = new ResetButton(
+                this.controlWrapper,
+                (() => this.setup(stopLoading)).bind(this),
+            );
+        }
 
         // render pause button if simulation is continuous
         if (!this.isStatic) {
@@ -50,9 +54,8 @@ export class TwoDSimulation {
         throw new Error('init() must be implemented by subclass');
     }
 
-    togglePause(paused=null) {
-
-        if (typeof(paused) !== Boolean) {
+    togglePause(paused = null) {
+        if (typeof paused !== Boolean) {
             paused = !this.paused;
         }
 

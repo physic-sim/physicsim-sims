@@ -2,12 +2,12 @@ export class CheckBoxInput {
     base;
     input;
     disabled;
-    input
+    input;
 
     constructor(base, val, label) {
         this.base = base;
         this.label = label;
-        
+
         // construct html framework
         let container = document.createElement('div');
         container.classList.add('check-box-input-container');
@@ -19,7 +19,7 @@ export class CheckBoxInput {
         this.input = document.createElement('input');
         this.input.type = 'checkbox';
         this.input.checked = val;
-        this.input.classList.add('check-box-input-input')
+        this.input.classList.add('check-box-input-input');
 
         container.append(this.input, pLabel);
 
@@ -33,5 +33,4 @@ export class CheckBoxInput {
     set(val) {
         this.input.checked = val;
     }
-
 }

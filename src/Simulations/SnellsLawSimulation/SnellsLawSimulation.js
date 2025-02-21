@@ -1,4 +1,4 @@
-import { ThreeDSimulation } from "../ThreeDSimulation";
+import { ThreeDSimulation } from '../ThreeDSimulation';
 import { Button } from '../../Controls/Button';
 import { SliderInput } from '../../Input/SliderInput';
 import { Ray } from './Ray';

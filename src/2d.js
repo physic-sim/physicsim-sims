@@ -1,7 +1,7 @@
 import page from 'page';
 
 // import css
-import './styles/lib.css'
+import './styles/lib.css';
 import './styles/styles2d.css';
 
 // loading logic
@@ -38,11 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
     updateLoading(loadingText);
 });
 
-function loadSim(Sim, title, description=null) {
-
+function loadSim(Sim, title, description = null) {
     // set header & tab title
     document.getElementById('header-title').innerHTML = title;
-    document.getElementById('tab-title').innerHTML = `Physicsim (${title.split('(')[0].trim()})`;
+    document.getElementById('tab-title').innerHTML =
+        `Physicsim (${title.split('(')[0].trim()})`;
 
     if (description) {
         document.getElementById('description').innerText = description;
@@ -54,25 +54,35 @@ function loadSim(Sim, title, description=null) {
         document.getElementById('inputs-wrapper'),
         document.getElementById('ctrl-wrapper'),
         document.getElementById('attr-wrapper')
-    )
+    );
 
-    sim.setup(stopLoading)
+    sim.setup(stopLoading);
 }
 
 // routing system and chunk loading system
 page('/2/nuclear-decay', () => {
-    import('./Simulations/NuclearDecaySimulation').then(
-        (module) => {
-            loadSim(module.default, 'Nuclear Decay', "This simulation uses a Monte Carlo Simulation to model the randomness within nuclear decay. Change the starting number of nuclei to see how the exponential model of decay becomes more accurate as the number of nuclei becomes statistically significant.")
-        }
-    )
+    import('./Simulations/NuclearDecaySimulation').then((module) => {
+        loadSim(
+            module.default,
+            'Nuclear Decay',
+            'This simulation uses a Monte Carlo Simulation to model the randomness within nuclear decay. Change the starting number of nuclei to see how the exponential model of decay becomes more accurate as the number of nuclei becomes statistically significant.',
+        );
+    });
 });
 
+page('/2/wave-interference', () => {
+    import('./Simulations/InterferenceSimulation').then((module) => {
+        loadSim(
+            module.default,
+            'Wave Interference',
+            'This simulation shows how interference of waves occurs as the path difference between two sources changes as an observer moves between them.',
+        );
+    });
+});
 
 page('*', () => {
     window.location.href = 'https://physicsim.co.uk';
-})
-
+});
 
 // start router
 page();

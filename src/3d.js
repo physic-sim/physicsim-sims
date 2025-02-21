@@ -2,7 +2,7 @@ import p5 from 'p5';
 import page from 'page';
 
 // import css
-import './styles/lib.css'
+import './styles/lib.css';
 import './styles/styles3d.css';
 
 // loading logic
@@ -40,10 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // add additional control logic for the simulation
-function loadSim(Sim, title, hasControls=true, hasGraphs=true) {
+function loadSim(Sim, title, hasControls = true, hasGraphs = true) {
     // set header & tab title
     document.getElementById('header-title').innerHTML = title;
-    document.getElementById('tab-title').innerHTML = `Physicsim (${title.split('(')[0].trim()})`;
+    document.getElementById('tab-title').innerHTML =
+        `Physicsim (${title.split('(')[0].trim()})`;
 
     // init sketch
     const sketch = new Sim(
@@ -175,16 +176,16 @@ function loadSim(Sim, title, hasControls=true, hasGraphs=true) {
             sketch.rotateControl = true;
         });
 
-    document.querySelectorAll('input[type="range"]').forEach(slider => {
-        slider.addEventListener("pointerdown", (e) => {
-            e.stopPropagation()
+    document.querySelectorAll('input[type="range"]').forEach((slider) => {
+        slider.addEventListener('pointerdown', (e) => {
+            e.stopPropagation();
             sketch.rotateControl = false;
         });
-        slider.addEventListener("pointerup", (e) => {
+        slider.addEventListener('pointerup', (e) => {
             sketch.rotateControl = true;
-        })
+        });
     });
-    
+
     // play / pause simulation based on visibility API
     document.addEventListener('visibilitychange', (e) => {
         if (document.visibilityState == 'visible') {
@@ -192,7 +193,7 @@ function loadSim(Sim, title, hasControls=true, hasGraphs=true) {
         } else {
             sketch.togglePause(true);
         }
-    })
+    });
 
     // update frame-rate
     setInterval(() => {
@@ -238,13 +239,11 @@ page('/3/alpha-scattering', () => {
     import('./Simulations/ScatteringSimulation').then((module) => {
         loadSim(module.default, 'Alpha Particle Scattering', true, false);
     });
-})
+});
 
 page('*', () => {
     window.location.href = 'https://physicsim.co.uk';
-})
-
-
+});
 
 // start router
-page()
+page();

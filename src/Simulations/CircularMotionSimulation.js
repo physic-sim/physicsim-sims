@@ -1,4 +1,4 @@
-import { ThreeDSimulation } from "./ThreeDSimulation";
+import { ThreeDSimulation } from './ThreeDSimulation';
 import { ValueInput } from '../Input/ValueInput';
 import { Button } from '../Controls/Button';
 import Chart from 'chart.js/auto';

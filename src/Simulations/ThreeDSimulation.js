@@ -75,9 +75,8 @@ export class ThreeDSimulation {
         throw new Error('frame() must be implemented by subclass');
     }
 
-    togglePause(paused=null) {
-
-        if (typeof(paused) !== Boolean) {
+    togglePause(paused = null) {
+        if (typeof paused !== Boolean) {
             paused = !this.paused;
         }
 

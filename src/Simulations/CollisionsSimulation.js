@@ -1,4 +1,4 @@
-import { ThreeDSimulation } from "./ThreeDSimulation";
+import { ThreeDSimulation } from './ThreeDSimulation';
 import { ValueInput } from '../Input/ValueInput';
 import { VectorInput } from '../Input/VectorInput';
 import { SliderInput } from '../Input/SliderInput';

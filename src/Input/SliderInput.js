@@ -7,7 +7,7 @@ export class SliderInput {
     unit;
     pLabel;
 
-    constructor(base, val, min, max, step, label, unit, update=true) {
+    constructor(base, val, min, max, step, label, unit, update = true) {
         this.base = base;
         this.min = min;
         this.max = max;
@@ -23,7 +23,6 @@ export class SliderInput {
         } else {
             this.pLabel.innerHTML = this.label;
         }
-        
 
         this.input = document.createElement('input');
         this.input.type = 'range';
