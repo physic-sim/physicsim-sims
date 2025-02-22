@@ -198,6 +198,7 @@ export default class InterferenceSimulation extends TwoDSimulation {
         }
 
         this.isDragging = true;
+        document.body.style.overflow = 'hidden';
         this.obs.x = p.mouseX;
         this.obs.y = p.mouseY;
 
@@ -211,6 +212,7 @@ export default class InterferenceSimulation extends TwoDSimulation {
     mouseReleased(p) {
         if (this.isDragging) {
             this.isDragging = false;
+            document.body.style.overflowY = 'auto';
         }
     }
 
