@@ -98,7 +98,7 @@ export default class InterferenceSimulation extends TwoDSimulation {
     }
 
     simDraw(p) {
-        p.background(8, 8, 8);
+        p.background(0, 0, 0);
 
         if (!this.isDragging) {
             this.obs = new p5.Vector(this.getPosition(), this.obs.y);
@@ -159,7 +159,7 @@ export default class InterferenceSimulation extends TwoDSimulation {
 
     drawSpeaker(p, x, y) {
         p.noStroke();
-        p.fill(0, 0, 0);
+        p.fill(35, 35, 35);
         p.circle(
             x,
             y,
@@ -169,9 +169,9 @@ export default class InterferenceSimulation extends TwoDSimulation {
                         (p.millis() / 1e5) * (this.v / this.lambdaInput.get()),
                     ),
         );
-        p.fill(40, 40, 40);
+        p.fill(55, 55, 55);
         p.circle(x, y, 30);
-        p.fill(12, 12, 12);
+        p.fill(25, 25, 25);
         p.circle(x, y, 10);
 
         // draw wave fronts
