@@ -7,6 +7,7 @@ import 'p5/lib/addons/p5.sound';
 export default class InterferenceSimulation extends TwoDSimulation {
     v = 343; // speed of sound
     sf = 1/100;
+    isDragging = false;
 
     constructor(container, inputs, controls, attributes) {
         super(container, inputs, controls, attributes, false, true);
@@ -42,12 +43,21 @@ export default class InterferenceSimulation extends TwoDSimulation {
 
     init() {
         // initalise simulation
-        this.offset = 0;
         this.p = new p5((p) => {
             p.setup = () => this.simSetup(p);
             p.draw = () => this.simDraw(p);
             p.windowResized = () => this.handleResize(p);
+            p.mouseDragged = () => this.mouseDragged(p);
+            p.mouseReleased = () => this.mouseReleased(p);
+            p.touchEnded = () => this.mouseReleased(p);
         });
+
+        // prevent scroll when dragging on mobile
+        document.addEventListener('touchmove', (e) => {
+            if (this.isDragging) {
+                e.preventDefault();
+            }
+        }, { passive: false }) 
     }
 
     simSetup(p) {
@@ -89,7 +99,13 @@ export default class InterferenceSimulation extends TwoDSimulation {
 
     simDraw(p) {
         p.background(8, 8, 8);
-        this.obs = new p5.Vector(this.getPosition(), this.p.height * 0.5);
+
+        if (!this.isDragging) {
+            this.obs = new p5.Vector(this.getPosition(), this.obs.y);
+        } else {
+            this.posInput.set(this.obs.x / p.width * 2);
+        }
+
         this.osc.freq(this.v / this.lambdaInput.get());
 
         // move observer if configured
@@ -111,7 +127,9 @@ export default class InterferenceSimulation extends TwoDSimulation {
         let d2 = p5.Vector.dist(this.src2, this.obs) * this.sf;
 
         let lambda = this.lambdaInput.get();
-        let phaseDiff = ((Math.abs(d1 - d2) % lambda) / lambda) * (2 * Math.PI);
+        let pathDiff = Math.abs(d1 - d2);
+        let phaseDiff = (pathDiff / lambda) * (2 * Math.PI) % (2 * Math.PI);
+
 
         let percievedAmplitude = (1 + p.cos(phaseDiff)) / 2;
         this.osc.amp(percievedAmplitude, 0.1);
@@ -135,7 +153,8 @@ export default class InterferenceSimulation extends TwoDSimulation {
         this.drawSpeaker(p, this.src1.x, this.src1.y);
         this.drawSpeaker(p, this.src2.x, this.src2.y);
         p.fill(108, 70, 204);
-        p.circle(this.obs.x, window.innerHeight * 0.5 * 0.5, 25);
+        p.noStroke();
+        p.circle(this.obs.x, this.obs.y, 25);
     }
 
     drawSpeaker(p, x, y) {
@@ -170,6 +189,41 @@ export default class InterferenceSimulation extends TwoDSimulation {
             );
             p.circle(x, y, this.lambdaInput.get() * 1 / this.sf * i);
         }
+    }
+
+    mouseDragged(p) {
+
+        if (!this.isInBounds(p)) {
+            return;
+        }
+
+        this.isDragging = true;
+        this.obs.x = p.mouseX;
+        this.obs.y = p.mouseY;
+
+        if (!this.paused) {
+            this.togglePause();
+            this.pauseBtn.onClick();
+            this.pauseBtn.paused = true;
+        }
+    }
+
+    mouseReleased(p) {
+        if (this.isDragging) {
+            this.isDragging = false;
+        }
+    }
+
+    isInBounds(p) {
+        if (p.mouseX < 0 || p.mouseX > p.width) {
+            return false;
+        }
+
+        if (p.mouseY < 0 || p.mouseY > p.height) {
+            return false;
+        }
+
+        return true;
     }
 
     getPosition() {

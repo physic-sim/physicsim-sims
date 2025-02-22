@@ -75,7 +75,7 @@ page('/2/wave-interference', () => {
         loadSim(
             module.default,
             'Wave Interference',
-            'This simulation shows how interference of waves occurs as the path difference between two sources changes as an observer moves between them.',
+            'This simulation shows how interference of waves occurs as the path difference between two sources changes as an observer moves between them. Drag around on the simulation pane to manually move the observer.',
         );
     });
 });
