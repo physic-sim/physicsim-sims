@@ -3,9 +3,11 @@
     --main-bg: #1e1e1e;
     --off-bg: #080808;
     --ctrl-bg: #ffffff;
+    --off-ctrl-bg: #ececec;
     --alt-green: #a6bd6f;
     --alt-purple: #6c46cc;
     --alt-red: #9c6270;
+    --alt-blue: #aacadb;    
 }
 
 /* NumInput */

@@ -107,14 +107,6 @@ export default class NuclearDecaySimulation extends TwoDSimulation {
                     },
                 },
                 plugins: {
-                    /*
-                        title: {
-                            display: true,
-                            text: 'Nuclear Decay',
-                            font: { family: 'CMUSerifRoman', size: 16 },
-                            color: '#fff',
-                        },
-                        */
                     decimation: {
                         enabled: true,
                         algorithm: 'min-max',
@@ -122,8 +114,8 @@ export default class NuclearDecaySimulation extends TwoDSimulation {
                     },
                     legend: { display: true },
                 },
-                layout: { padding: { right: 20 } },
-                backgroundColor: '#e1e1e1',
+                layout: { padding: { right: 30, left: 30, top: 75, bottom: 75 } },
+                backgroundColor: '#000',
                 color: '#fff',
             },
         });

@@ -141,8 +141,8 @@ export default class CollisionsSimulation extends ThreeDSimulation {
         if (this.rotateControl) {
             p.orbitControl();
         }
-        p.perspective(0.4, this.width / this.height, 10, 500000);
 
+        p.perspective(0.4, this.width / this.height, 10, 500000);
         p.push();
         p.stroke(255, 255, 255, 75);
         p.line(-this.size, 0, 0, this.size, 0, 0);

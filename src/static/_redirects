@@ -1,11 +1,9 @@
 # Rewrite legacy routes to new routes
-/circular-motion/ /3/circular-motion 301
-/collisions/ /3/collisions/ 301
-/projectile-motion/ /3/projectilemotion 301
-/snells-law/ /3/snells-law 301
-/cyclotron /3/cyclotron 301
-/alpha-scattering /3/alpha-scattering
-
-# Rewrite /3/ and /2/ routes to correct SPAs
-/3/*    /3/index.html  200
-/2/*    /2/index.html  200
+/2/nuclear-decay /nuclear-decay
+/2/wave-interference /wave-interference
+/3/collisions /collisions
+/3/circular-motion /circularmotion
+/3/projectile-motion /projectile-motion
+/3/snells-law /snells-law
+/3/cyclotron /cyclotron
+/3/alpha-scattering /alpha-scattering

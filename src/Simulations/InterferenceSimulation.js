@@ -61,9 +61,11 @@ export default class InterferenceSimulation extends TwoDSimulation {
     }
 
     simSetup(p) {
+        this.width = document.getElementById('sim-div').offsetWidth
+        this.height = document.getElementById('sim-div').offsetHeight
         p.createCanvas(
-            window.innerWidth,
-            window.innerHeight * 0.5,
+            this.width,
+            this.height,
             p5.P2D,
             this.container,
         );
@@ -71,16 +73,16 @@ export default class InterferenceSimulation extends TwoDSimulation {
 
         // add speakers
         this.src1 = new p5.Vector(
-            this.p.width * 0.25,
-            window.innerHeight * 0.5 * 0.5,
+            p.width * 0.25,
+            p.height * 0.5,
         );
         this.src2 = new p5.Vector(
-            this.p.width * 0.75,
-            window.innerHeight * 0.5 * 0.5,
+            p.width * 0.75,
+            p.height * 0.5,
         );
         this.obs = new p5.Vector(
-            this.getPosition(),
-            window.innerHeight * 0.5 * 0.5,
+            this.getPosition(p),
+            p.height * 0.5,
         );
         
         // give obs velocity
@@ -101,7 +103,7 @@ export default class InterferenceSimulation extends TwoDSimulation {
         p.background(0, 0, 0);
 
         if (!this.isDragging) {
-            this.obs = new p5.Vector(this.getPosition(), this.obs.y);
+            this.obs = new p5.Vector(this.getPosition(p), this.obs.y);
         } else {
             this.posInput.set(this.obs.x / p.width * 2);
         }
@@ -145,8 +147,8 @@ export default class InterferenceSimulation extends TwoDSimulation {
 
         // update attributes
         this.attributeWrapper.innerHTML = `
-            Path Difference = ${Math.abs(((d1 - d2) % lambda).toFixed(2))} m <br>
-            Phase Difference = ${phaseDiff.toFixed(2)} rad
+            Path Difference = ${Math.abs(((d1 - d2) / lambda).toFixed(1))}λ<br>
+            Phase Difference = ${phaseDiff.toFixed(1)} rad
         `;
 
         // draw speakers and observers
@@ -177,7 +179,7 @@ export default class InterferenceSimulation extends TwoDSimulation {
         // draw wave fronts
         for (
             let i = 0;
-            i < window.innerWidth / this.lambdaInput.get() * this.sf;
+            i < p.width / this.lambdaInput.get() * this.sf;
             i++
         ) {
             p.noFill();
@@ -185,7 +187,7 @@ export default class InterferenceSimulation extends TwoDSimulation {
                 100,
                 100,
                 100,
-                (i / (window.innerWidth / this.lambdaInput.get() * this.sf)) * 255,
+                (i / (p.width / this.lambdaInput.get() * this.sf)) * 255,
             );
             p.circle(x, y, this.lambdaInput.get() * 1 / this.sf * i);
         }
@@ -228,8 +230,8 @@ export default class InterferenceSimulation extends TwoDSimulation {
         return true;
     }
 
-    getPosition() {
-        let x = window.innerWidth * (this.posInput.get() / 2);
+    getPosition(p) {
+        let x = p.width * (this.posInput.get() / 2);
         return x;
     }
 

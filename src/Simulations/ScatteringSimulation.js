@@ -136,10 +136,10 @@ class Charge {
     }
 
     draw(p) {
-        if (this.q < 0) {
-            p.fill(255, 0, 0);
+        if (this.q > 0) {
+            p.fill('#a6bd6f');
         } else {
-            p.fill(0, 255, 0);
+            p.fill('#9c6270');
         }
         p.noStroke();
         p.push();

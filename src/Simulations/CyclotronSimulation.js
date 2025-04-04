@@ -7,6 +7,7 @@ export default class CyclotronSimulation extends ThreeDSimulation {
     historyLimit = 500;
     pauseStart;
     d = 10;
+    timeScale = 1
 
     constructor(container, inputs, graphs, controls, attributes) {
         super(container, inputs, graphs, controls, attributes);
@@ -67,7 +68,7 @@ export default class CyclotronSimulation extends ThreeDSimulation {
 
         // init sim variables
         this.pos = p.createVector(0, 0, 0);
-        this.v = p.createVector(1, 0, 0);
+        this.v = p.createVector(1e-5, 0, 0);
         this.history = [];
     }
 
@@ -80,7 +81,7 @@ export default class CyclotronSimulation extends ThreeDSimulation {
 
         p.background(0);
 
-        let t = (p.millis() - this.start) / 1000; // simulation time
+        let t = (p.millis() - this.start) / 1000 * this.timeScale; // simulation time
         let T = Math.abs((2 * Math.PI * this.m) / (this.q * this.B)); // cyclotron period
         let gapTime = T / 2; // half-period for electric field
         let n = Math.abs(Math.floor(t / gapTime)) + 1; // number of half-cycles
@@ -159,9 +160,9 @@ export default class CyclotronSimulation extends ThreeDSimulation {
         p.noStroke();
 
         if (this.q > 0) {
-            p.fill(0, 255, 0);
+            p.fill('#a6bd6f');
         } else {
-            p.fill(255, 0, 0);
+            p.fill('#9c6270');
         }
 
         p.translate(this.pos);
@@ -179,14 +180,14 @@ export default class CyclotronSimulation extends ThreeDSimulation {
             this.data.s.shift();
         }
         if (!this.paused) {
-            this.data.t.push(time * 1e-8);
+            this.data.t.push(time * 1e-5);
             this.data.v.push(this.v.mag() * 1e5);
             let pd =
                 this.V *
                 100 *
                 p.cos((((2 * Math.PI) / T) * (p.millis() - this.start)) / 1000);
             this.data.pd.push(pd);
-            this.data.s.push(this.pos.x * 1e-3);
+            this.data.s.push(this.pos.x * 1e3);
         }
 
         if (this.selected == 'graphs') {
