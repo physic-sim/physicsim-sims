@@ -190,15 +190,32 @@
 
 .graphs-wrapper {  
     position: absolute;
-    display: grid;
+    overflow-y: auto;
     top: 0;
     right: 0;
     width: 30vw;
     height: 100vh;
     background-color: var(--main-bg);
+    overflow-x: hidden;
+}
+
+.graphs-container {
+    width: 100%;
+    display: grid;
+    background-color: var(--main-bg);
     grid-template-rows: 1fr 1fr 1fr;
     grid-template-columns: 95%;
-    overflow-y: auto;
+}
+
+.graphs-header {
+    background-color: var(--main-bg);
+    width: 100%;
+    padding: 0.5em;
+    margin: 0;
+    text-align: center;
+    color: #fff;
+    font-size: x-large;
+    filter: drop-shadow(5px 5px 10px #00000076);
 }
 
 .graph {
@@ -210,21 +227,20 @@
     font-family: "proxima-nova", sans-serif;
     font-weight: 400;
     font-style: normal;
-    padding: .5em;
     border-spacing: 0;
+    background-color: var(--ctrl-bg);
+    color: #000;
 }
 
 .table-title {
     text-align: center;
-    color: #fff;
-}
-
-.table-head {
-    color: #fff;
-}
-
-.table-tr {
-    color: #fff;
+    font-family: "proxima-nova", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    background-color: var(--off-ctrl-bg);
+    border-bottom: 2px solid var(--main-bg);
+    margin: 0;
+    padding: .75em;
 }
 
 .table-td {

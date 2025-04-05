@@ -64,7 +64,7 @@ function loadSim(Sim, title, description = null, hasControls = true, hasGraphs =
         const sim = new Sim(
             document.getElementById('sim-wrapper'),
             document.getElementById('inputs-container'),
-            document.getElementById('graphs-wrapper'),
+            document.getElementById('graphs-container'),
             document.getElementById('ctrl-wrapper'),
             document.getElementById('attr-wrapper')
         );
