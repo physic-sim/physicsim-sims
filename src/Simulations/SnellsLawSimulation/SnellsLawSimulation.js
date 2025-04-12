@@ -4,6 +4,7 @@ import { SliderInput } from '../../Input/SliderInput';
 import { Ray } from './Ray';
 import { BoxGeometry } from './BoxGeometry';
 import { RayDiagram } from './RayDiagram';
+import p5 from 'p5';
 
 export default class SnellsLawSimulation extends ThreeDSimulation {
     UNCERTAINTY = 1e-6;
@@ -12,6 +13,28 @@ export default class SnellsLawSimulation extends ThreeDSimulation {
         super(container, inputs, graphs, controls, attributes, true);
 
         // add inputs
+        this.thetaInput = new SliderInput(
+            this.inputWrapper,
+            45,
+            0,
+            360,
+            1,
+            'θ',
+            '°',
+            true
+        )
+
+        this.phiInput = new SliderInput(
+            this.inputWrapper,
+            90,
+            0,
+            360,
+            1,
+            'φ',
+            '°',
+            true
+        )
+
         this.posXInput = new SliderInput(
             this.inputWrapper,
             -25,
@@ -39,36 +62,6 @@ export default class SnellsLawSimulation extends ThreeDSimulation {
             75,
             0.1,
             'pos<sub>z</sub>',
-            ''
-        );
-
-        this.dirXInput = new SliderInput(
-            this.inputWrapper,
-            3,
-            -5,
-            5,
-            0.1,
-            'dir<sub>x</sub>',
-            ''
-        );
-
-        this.dirYInput = new SliderInput(
-            this.inputWrapper,
-            0,
-            -5,
-            5,
-            0.1,
-            'dir<sub>y</sub>',
-            ''
-        );
-
-        this.dirZInput = new SliderInput(
-            this.inputWrapper,
-            -3,
-            -5,
-            5,
-            0.1,
-            'dir<sub>z</sub>',
             ''
         );
 
@@ -167,15 +160,14 @@ export default class SnellsLawSimulation extends ThreeDSimulation {
         let posY = this.posZInput.get();
         let posZ = this.posYInput.get();
 
-        let dirX = this.dirXInput.get();
-        let dirY = this.dirZInput.get();
-        let dirZ = this.dirYInput.get();
+        let theta = this.thetaInput.get() * Math.PI / 180;
+        let phi = this.phiInput.get() * Math.PI / 180;
 
         // init ray & geometry
         this.scene = [];
         this.ray = new Ray(
             p.createVector(posX, -posY, posZ),
-            p.createVector(dirX, -dirY, dirZ),
+            p5.Vector.fromAngles(theta, phi),
             1,
             true,
             10,
@@ -204,9 +196,8 @@ export default class SnellsLawSimulation extends ThreeDSimulation {
         let posY = this.posZInput.get();
         let posZ = this.posYInput.get();
 
-        let dirX = this.dirXInput.get();
-        let dirY = this.dirZInput.get();
-        let dirZ = this.dirYInput.get();
+        let theta = Math.PI - this.thetaInput.get() * Math.PI / 180;
+        let phi = Math.PI - this.phiInput.get() * Math.PI / 180;
 
         let n = this.nInput.get();
 
@@ -232,11 +223,7 @@ export default class SnellsLawSimulation extends ThreeDSimulation {
             this.ray.src.z = posZ;
         }
 
-        this.ray.dir.x = dirX;
-        this.ray.dir.y = -dirY;
-        this.ray.dir.z = dirZ;
-
-        this.ray.dir.normalize();
+        this.ray.dir = p5.Vector.fromAngles(theta, phi)
 
         this.ray.draw(this.scene, p, this.UNCERTAINTY, 0);
 
