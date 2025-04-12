@@ -33,7 +33,7 @@ export default class CyclotronSimulation extends ThreeDSimulation {
         );
         this.pdInput = new ValueInput(
             this.inputWrapper,
-            10000,
+            100,
             'Potential Difference',
             'V',
         );
@@ -57,7 +57,7 @@ export default class CyclotronSimulation extends ThreeDSimulation {
         this.m = Math.abs(this.massInput.get());
         this.q = this.chargeInput.get();
         this.B = this.magInput.get();
-        this.V = this.pdInput.get() / 100;
+        this.V = this.pdInput.get();
 
         // init data
         this.data.t = [];
@@ -67,7 +67,7 @@ export default class CyclotronSimulation extends ThreeDSimulation {
         this.start = p.millis();
 
         // init sim variables
-        this.pos = p.createVector(0, 0, 0);
+        this.pos = p.createVector(-this.d/2, 0, 0);
         this.v = p.createVector(1e-5, 0, 0);
         this.history = [];
     }
@@ -182,12 +182,9 @@ export default class CyclotronSimulation extends ThreeDSimulation {
         if (!this.paused) {
             this.data.t.push(time * 1e-5);
             this.data.v.push(this.v.mag() * 1e5);
-            let pd =
-                this.V *
-                100 *
-                p.cos((((2 * Math.PI) / T) * (p.millis() - this.start)) / 1000);
+            let pd = this.V * p.cos(((2 * Math.PI) / T) * (time));
             this.data.pd.push(pd);
-            this.data.s.push(this.pos.x * 1e3);
+            this.data.s.push(this.pos.x * 1e-3);
         }
 
         if (this.selected == 'graphs') {
@@ -292,7 +289,7 @@ export default class CyclotronSimulation extends ThreeDSimulation {
 
     updateAttributes() {
         this.attributeWrapper.innerHTML = `
-			v = ${(this.v.mag().toFixed(0) * 1e5).toFixed(0)} m/s <br>
+			v = ${(this.v.mag()).toExponential(2)} m/s <br>
 	  	`;
     }
 
