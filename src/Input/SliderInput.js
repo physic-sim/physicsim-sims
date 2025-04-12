@@ -28,8 +28,8 @@ export class SliderInput {
         this.input.type = 'range';
         this.input.min = this.min;
         this.input.max = this.max;
-        this.input.value = val;
         this.input.step = step;
+        this.input.value = val;
         this.input.classList.add('slider-input-slider');
 
         container.append(this.pLabel, this.input);
@@ -51,5 +51,12 @@ export class SliderInput {
 
     update() {
         this.pLabel.innerHTML = `${this.label} = ${this.get().toFixed(2)} ${this.unit}`;
+    }
+
+    changeBounds(min, max) {
+        this.min = min;
+        this.max = max;
+        this.input.min = this.min;
+        this.input.max = this.max;
     }
 }

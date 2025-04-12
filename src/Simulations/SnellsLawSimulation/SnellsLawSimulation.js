@@ -3,6 +3,7 @@ import { Button } from '../../Controls/Button';
 import { SliderInput } from '../../Input/SliderInput';
 import { Ray } from './Ray';
 import { BoxGeometry } from './BoxGeometry';
+import { RayDiagram } from './RayDiagram';
 
 export default class SnellsLawSimulation extends ThreeDSimulation {
     UNCERTAINTY = 1e-6;
@@ -73,7 +74,7 @@ export default class SnellsLawSimulation extends ThreeDSimulation {
 
         this.nInput = new SliderInput(
             this.inputWrapper,
-            1,
+            1.30,
             0,
             5.0,
             0.01,
@@ -83,6 +84,69 @@ export default class SnellsLawSimulation extends ThreeDSimulation {
 
         // init data
         this.interactions = [];
+
+        // init table
+        this.graphWrapper.style.display = 'block';
+        // title table
+        let title = document.createElement('h2');
+        title.innerHTML = 'Surface Interactions';
+        title.classList.add('table-title');
+        this.graphWrapper.append(title);
+        // table wrapper
+        let table = document.createElement('table');
+        table.classList.add('table-wrapper');
+        // add header
+        let head = document.createElement('thead');
+        head.classList.add('table-head');
+        let headTr = document.createElement('tr');
+        let iHead = document.createElement('th');
+        iHead.innerHTML = 'i/°';
+        iHead.scope = 'col';
+        iHead.className = 'table-td';
+        let cHead = document.createElement('th');
+        cHead.innerHTML = 'c/°';
+        cHead.scope = 'col';
+        cHead.className = 'table-td';
+        let rHead = document.createElement('th');
+        rHead.innerHTML = 'r/°';
+        rHead.scope = 'col';
+        rHead.className = 'table-td';
+        let n1Head = document.createElement('th');
+        n1Head.innerHTML = 'n1';
+        n1Head.scope = 'col';
+        n1Head.className = 'table-td';
+        let n2Head = document.createElement('th');
+        n2Head.innerHTML = 'n2';
+        n2Head.scope = 'col';
+        n2Head.className = 'table-td';
+        headTr.append(iHead, cHead, rHead, n1Head, n2Head);
+        head.append(headTr);
+        table.append(head);
+        this.tbody = document.createElement('tbody');
+        this.tbody.classList.add('table-body');
+        table.appendChild(this.tbody);
+        this.graphWrapper.append(table);
+
+        // title table
+        let diagramTitle = document.createElement('h2');
+        diagramTitle.innerHTML = 'Ray Diagrams';
+        diagramTitle.classList.add('table-title');
+        this.graphWrapper.append(diagramTitle);
+        // init ray diagrams
+        this.rayDiagramWrapper = document.createElement('div');
+        this.rayDiagramWrapper.classList.add('diagram-wrapper')
+        this.graphWrapper.appendChild(this.rayDiagramWrapper);
+        this.rayDiagram = new RayDiagram(this.rayDiagramWrapper);
+        this.diagramInput = new SliderInput(
+            this.rayDiagramWrapper,
+            1,
+            1,
+            1,
+            1,
+            'Slide to view different interactions.',
+            '',
+            false
+        )
     }
 
     init(p) {
@@ -181,64 +245,26 @@ export default class SnellsLawSimulation extends ThreeDSimulation {
             this.scene[i].show(p);
         }
 
+        // update data
+        this.interactions = [];
+        let next = this.ray;
+
+        while (next !== null) {
+            this.interactions.push(next.data);
+            next = next.next;
+        }
+
         // render table of interactions
         if (this.selected == 'graphs') {
-            this.interactions = [];
-            let next = this.ray;
-
-            while (next !== null) {
-                this.interactions.push(next.data);
-                next = next.next;
-            }
-
             this.tabulate(this.interactions);
+            this.diagramInput.changeBounds(1, this.interactions.length - 1)
+            this.rayDiagram.update(this.interactions[this.diagramInput.get() - 1])
         }
     }
 
     tabulate(interactions) {
-        this.graphWrapper.innerHTML = '';
-        this.graphWrapper.style.display = 'block';
+        this.tbody.innerHTML = ''
 
-        // title table
-        let title = document.createElement('h2');
-        title.innerHTML = 'Surface Interactions';
-        title.classList.add('table-title');
-        this.graphWrapper.append(title);
-
-        // table wrapper
-        let table = document.createElement('table');
-        table.classList.add('table-wrapper');
-
-        // add header
-        let head = document.createElement('thead');
-        head.classList.add('table-head');
-        let headTr = document.createElement('tr');
-        let iHead = document.createElement('th');
-        iHead.innerHTML = 'i/°';
-        iHead.scope = 'col';
-        iHead.className = 'table-td';
-        let cHead = document.createElement('th');
-        cHead.innerHTML = 'c/°';
-        cHead.scope = 'col';
-        cHead.className = 'table-td';
-        let rHead = document.createElement('th');
-        rHead.innerHTML = 'r/°';
-        rHead.scope = 'col';
-        rHead.className = 'table-td';
-        let n1Head = document.createElement('th');
-        n1Head.innerHTML = 'n1';
-        n1Head.scope = 'col';
-        n1Head.className = 'table-td';
-        let n2Head = document.createElement('th');
-        n2Head.innerHTML = 'n2';
-        n2Head.scope = 'col';
-        n2Head.className = 'table-td';
-        headTr.append(iHead, cHead, rHead, n1Head, n2Head);
-        head.append(headTr);
-        table.append(head);
-        // add data
-        let body = document.createElement('tbody');
-        body.classList.add('table-body');
         interactions.map((data, index) => {
             // show interaction
             let tr = document.createElement('tr');
@@ -260,11 +286,8 @@ export default class SnellsLawSimulation extends ThreeDSimulation {
                 tr.appendChild(td);
             }
 
-            body.appendChild(tr);
+            this.tbody.appendChild(tr);
         });
-
-        table.appendChild(body);
-        this.graphWrapper.append(table);
     }
 
     download() {
