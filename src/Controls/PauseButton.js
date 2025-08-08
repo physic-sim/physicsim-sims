@@ -5,29 +5,23 @@ export class PauseButton extends Button {
 
     constructor(container, callback, paused = false) {
         if (paused) {
-            super(container, callback, 'Play');
+            super(container, callback, 'play_arrow', "play");
             this.button.classList.add('btn-run');
         } else {
-            super(container, callback, 'Pause');
+            super(container, callback, 'pause', "pause");
             this.button.classList.add('btn-pause');
         }
         this.button.classList.remove('btn-alt');
         this.paused = paused;
-
-        this.button.addEventListener('click', this.onClick.bind(this));
     }
 
-    onClick() {
-        this.paused = !this.paused;
+    pause() {
+        this.paused = true;
+        this.button.children[0].innerHTML = 'play_arrow';
+    }
 
-        if (this.paused) {
-            this.button.innerHTML = 'Play';
-            this.button.classList.remove('btn-pause');
-            this.button.classList.add('btn-run');
-        } else {
-            this.button.innerHTML = 'Pause';
-            this.button.classList.remove('btn-run');
-            this.button.classList.add('btn-pause');
-        }
+    play() {
+        this.paused = false;
+        this.button.children[0].innerHTML = 'pause';
     }
 }

@@ -1,22 +1,50 @@
-.header-wrapper {
-    position: absolute;
-    top: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-left: 1em;
+.toolbar-wrapper {
     z-index: 100;
+    position: absolute;
+    width: 70vw;
+    display: flex;
+    justify-content: space-between;
+    filter: drop-shadow(5px 5px 10px #00000076);
+}
+
+.header-wrapper {
+    display: flex;
+    align-items: center;
 }
 
 .header-logo {
-    padding: 1em;
-    width: 100px;
+    width: 75px;
     height: auto;
+    padding: .1em .5em .1em .5em;
 }
 
 .header-title {
-    font-size: 25px;
+    font-size: 20px;
+    padding: 0;
+    margin: 0;
     color: #fff;
+    padding: 0.5em 0 0.5em 0;
+    margin: 0;
+    text-align: center;
+    color: #fff;
+    font-size: x-large;
+}
+
+.toolbar-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.pane-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sim-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .ctrl-wrapper--bottom {
@@ -28,18 +56,6 @@
     justify-content: center;
     align-items: center;
     z-index: 1;
-}
-
-.ctrl-wrapper--left {
-    position: absolute;
-    left: 0;
-    top: 0%;
-    height: 100vh;
-    width: 125px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 1em;
 }
 
 .sim-wrapper {
@@ -55,6 +71,8 @@
     position: absolute;
     top: 0;
     left: 0;
+    width: 70vw;
+    height: 100vh;
 }
 
 .inputs-wrapper {
@@ -177,7 +195,6 @@
     text-align: center;
     color: #fff;
     font-size: x-large;
-    filter: drop-shadow(5px 5px 10px #00000076);
 }
 
 .inputs-container {
@@ -215,7 +232,6 @@
     text-align: center;
     color: #fff;
     font-size: x-large;
-    filter: drop-shadow(5px 5px 10px #00000076);
 }
 
 .graph {
@@ -259,36 +275,47 @@
 }
 
 .frame-rate {
-    font-family: Arial, Helvetica, sans-serif;
     font-size: small;
     color: #9a9a9a;
 }
 
 .attr-wrapper {
-    font-family: Arial, Helvetica, sans-serif;
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100svh;
+    padding: 1em;
+    font-family: 'CMUSerifRoman';
+    font-weight: normal;
+    font-style: normal;
     font-size: 15px;
     color: #c6c6c6;
-    width: max-content;
 }
 
 @media (max-width: 900px) {
+    .header-title {
+        display: none;
+    }
+
+    .toolbar-wrapper {
+        width: 100vw;
+    }
+
     .inputs-wrapper {
         width: 100vw;
-        height: 40vh;
+        height: 40svh;
         bottom: 0;
         top: auto;
     }
 
     .graphs-wrapper {
         width: 100vw;
-        height: 40vh;
+        height: 40svh;
         bottom: 0;
         top: auto;
-    }
-
-    .ctrl-wrapper--left {
-        padding-top: 5em;
-        justify-content: flex-start;
     }
 
     .inputs-header-wrapper {
@@ -296,7 +323,8 @@
     }
 
     .attr-wrapper {
-        font-family: Arial, Helvetica, sans-serif;
+        padding-top: 5em;
+        justify-content: flex-start;
         font-size: small;
         color: #c6c6c6;
     }
@@ -312,6 +340,6 @@
 
     .sim-wrapper {
         width: 100vw;
-        height: 60vh;
+        height: 60svh;
     }
 }

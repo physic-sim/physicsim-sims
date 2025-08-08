@@ -98,7 +98,8 @@ export default class CollisionsSimulation extends ThreeDSimulation {
         this.downloadBtn = new Button(
             this.controlWrapper,
             this.download.bind(this),
-            'Data',
+            'data_table',
+            'data'
         );
 
         // init data
@@ -123,6 +124,7 @@ export default class CollisionsSimulation extends ThreeDSimulation {
             189,
             111,
         );
+
         this.particleB = new Particle(
             Math.abs(this.massB.get()),
             this.posB.get(),
@@ -135,7 +137,6 @@ export default class CollisionsSimulation extends ThreeDSimulation {
 
     frame(p) {
         p.ambientLight(200);
-
         p.background(0);
 
         if (this.rotateControl) {
@@ -279,12 +280,12 @@ export default class CollisionsSimulation extends ThreeDSimulation {
 
     updateAttributes() {
         this.attributeWrapper.innerHTML = `
-			v[a] (x) = ${this.particleA.velocity.x.toFixed(2)} m/s <br>
-			v[a] (y) = ${this.particleA.velocity.z.toFixed(2)} m/s <br>
-			v[a] (z) = ${-this.particleA.velocity.y.toFixed(2)} m/s <br>
-			v[b] (x) = ${this.particleB.velocity.x.toFixed(2)} m/s <br>
-			v[b] (y) = ${this.particleB.velocity.z.toFixed(2)} m/s <br>
-			v[b] (z) = ${-this.particleB.velocity.y.toFixed(2)} m/s <br>
+			v<sub>Ax</sub> = ${this.particleA.velocity.x.toFixed(2)} m/s <br>
+			v<sub>Ay</sub> = ${this.particleA.velocity.z.toFixed(2)} m/s <br>
+			v<sub>Az</sub> = ${-this.particleA.velocity.y.toFixed(2)} m/s <br>
+			v<sub>Bx</sub> = ${this.particleB.velocity.x.toFixed(2)} m/s <br>
+			v<sub>By</sub> = ${this.particleB.velocity.z.toFixed(2)} m/s <br>
+			v<sub>Bz</sub> = ${-this.particleB.velocity.y.toFixed(2)} m/s <br>
 	  	`;
     }
 }

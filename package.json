@@ -8,7 +8,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "![PHYSICSim](./src//static/logo-header.png)",
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "copy-webpack-plugin": "^12.0.2",
@@ -30,6 +30,15 @@
     "html-webpack-plugin": "^5.6.3",
     "p5": "^1.11.3",
     "p5.sound": "^0.1.0",
-    "page": "^1.11.6"
-  }
+    "page": "^1.11.6",
+    "three": "^0.179.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/physic-sim/physicsim-sims.git"
+  },
+  "bugs": {
+    "url": "https://github.com/physic-sim/physicsim-sims/issues"
+  },
+  "homepage": "https://github.com/physic-sim/physicsim-sims#readme"
 }

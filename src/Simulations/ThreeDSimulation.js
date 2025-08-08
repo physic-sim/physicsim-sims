@@ -10,7 +10,7 @@ export class ThreeDSimulation {
         graphs,
         controls,
         attributes,
-        isStatic = false, // TODO: Add noReset functionality
+        isStatic = false,
     ) {
         // add containers and pause functionality
         this.paused = false;
@@ -19,7 +19,7 @@ export class ThreeDSimulation {
         this.graphWrapper = graphs;
         this.controlWrapper = controls;
         this.attributeWrapper = attributes;
-        this.selected = 'graphs';
+        this.selected = 'inputs';
         this.isStatic = isStatic;
         this.rotateControl = true;
     }
@@ -33,23 +33,9 @@ export class ThreeDSimulation {
             p.windowResized = () => this.handleResize(p);
         });
 
-        /* update frame-rate
-        setInterval(() => {
-            document.getElementById('frame-rate').innerHTML =
-                `${p.frameRate().toFixed(2)}/${p.getTargetFrameRate().toFixed(2)} fps`;
-        }, 1000);
-        */
-
         // panel selector
         document.getElementById('graphs-selector').addEventListener('click', () => {
-            if (this.selected == 'graphs') {
-                document.getElementById('graphs-wrapper').style.opacity = 0;
-                document.getElementById('graphs-wrapper').style.zIndex = -1;
-                document
-                    .getElementById('graphs-selector')
-                    .classList.remove('btn-toggle--selected');
-                this.selected = null;
-            } else {
+            if (this.selected !== 'graphs') {
                 document.getElementById('graphs-wrapper').style.opacity = 100;
                 document.getElementById('graphs-wrapper').style.zIndex = 100;
                 document.getElementById('inputs-wrapper').style.display = 'none';
@@ -64,13 +50,7 @@ export class ThreeDSimulation {
         });
 
         document.getElementById('inputs-selector').addEventListener('click', () => {
-            if (this.selected == 'inputs') {
-                document.getElementById('inputs-wrapper').style.display = 'none';
-                document
-                    .getElementById('inputs-selector')
-                    .classList.remove('btn-toggle--selected');
-                this.selected = null;
-            } else {
+            if (this.selected !== 'inputs') {
                 document.getElementById('graphs-wrapper').style.opacity = 0;
                 document.getElementById('graphs-wrapper').style.zIndex = -1;
                 document.getElementById('inputs-wrapper').style.display = 'flex';
@@ -142,7 +122,7 @@ export class ThreeDSimulation {
         });
 
         // play / pause simulation based on visibility API
-        document.addEventListener('visibilitychange', (e) => {
+        document.addEventListener('visibilitychange', () => {
             if (document.visibilityState == 'visible') {
                 this.togglePause(false);
             } else {
@@ -170,9 +150,15 @@ export class ThreeDSimulation {
             );
         }
 
-        // make canvas
-        this.width = window.innerWidth;
-        this.height = window.innerHeight;
+        // scale
+        if (window.innerWidth >= 900) {
+            this.width = window.innerWidth * 0.7;
+            this.height = window.innerHeight;
+        } else {
+            this.width  = window.innerWidth;
+            this.height = window.innerHeight * 0.6
+        }
+
         this.canvas = p.createCanvas(
             this.width,
             this.height,
@@ -209,13 +195,25 @@ export class ThreeDSimulation {
         if (typeof paused !== Boolean) {
             paused = !this.paused;
         }
-
+        
         this.paused = paused;
+
+        if (!this.isStatic) {
+            if (this.paused) { this.pauseBtn.pause(); }
+            if (!this.paused) { this.pauseBtn.play(); }
+        }
     }
 
     handleResize(p) { // resize sketch based on window change
-        this.width = window.innerWidth;
-        this.height = window.innerHeight;
+        // scale
+        if (window.innerWidth >= 900) {
+            this.width = window.innerWidth * 0.7;
+            this.height = window.innerHeight;
+        } else {
+            this.width  = window.innerWidth;
+            this.height = window.innerHeight * 0.6
+        }
+
         p.resizeCanvas(this.width, this.height);
     }
 
@@ -227,3 +225,4 @@ export class ThreeDSimulation {
         return element;
     }
 }
+ 

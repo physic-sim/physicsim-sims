@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="stylesheet" href="https://fontlibrary.org/en/face/cmu-serif"/>
     <link rel="stylesheet" href="https://use.typekit.net/fxw2jrd.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="/static/quickstyles.css">
     <link rel="apple-touch-icon" sizes="57x57" href="https://physicsim.co.uk/assets/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="https://physicsim.co.uk/assets/apple-icon-60x60.png">
@@ -29,22 +30,38 @@
             <h1 class="loading-txt" id="loading-txt">Loading...</h1>
         </div>
     </div>
-    <div class="header-wrapper">
-        <a href="https://physicsim.co.uk">
-            <img class="header-logo" src="/static/logo-header.png">
-        </a>
-        <h1 class="header-title" id="header-title"></h1>
+    <div class="toolbar-wrapper" id="toolbar">
+        <div class="header-wrapper">
+            <a href="https://physicsim.co.uk">
+                <img class="header-logo" src="/static/logo-header.png">
+            </a>
+            <h1 class="header-title" id="header-title"></h1>
+        </div>
+        <div class="toolbar-container">
+            <div class="pane-controls">
+                <div class="btn-wrapper">
+                    <button class="btn-toggle btn-toggle--selected" id="inputs-selector">
+                        <span class="material-symbols-outlined">discover_tune</span>
+                    </button>
+                    <span class="btn-tooltip">controls</span>
+                </div>
+                <div class="btn-wrapper">
+                    <button class="btn-toggle" id="graphs-selector">
+                        <span class="material-symbols-outlined">area_chart</span>
+                    </button>
+                    <span class="btn-tooltip">graphs</span>
+                </div>
+            </div>
+            <div class="sim-controls" id="sim-controls">
+            </div>
+        </div>
     </div>
-    <div class="ctrl-wrapper--bottom" id="ctrl-wrapper">
     </div>
     <div class="sim-wrapper" id="sim-div">
         <canvas id="sim-wrapper"></canvas>
     </div>
-    <div class="ctrl-wrapper--left">
-        <p id="attr-wrapper" class="attr-wrapper"></p>
-        <p id="frame-rate" class="frame-rate"></p>
-        <button class="btn-toggle btn-toggle--selected" id="inputs-selector">Controls</button>
-        <button class="btn-toggle" id="graphs-selector">Graphs</button>
+    <div class="attr-wrapper">
+        <p class="attr-container" id="attr"></p>
     </div>
     <div class="inputs-wrapper" id="inputs-wrapper">
         <p class="inputs-header">Controls</p>

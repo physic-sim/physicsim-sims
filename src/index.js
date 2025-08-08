@@ -5,6 +5,7 @@ import './styles/lib.css';
 import './styles/styles.css';
 import { ThreeDSimulation } from './Simulations/ThreeDSimulation';
 import { TwoDSimulation } from './Simulations/TwoDSimulation';
+import { ThreeJsSimulation } from './Simulations/ThreeJsSimulation'
 
 // loading logic
 let isLoading = true;
@@ -65,8 +66,21 @@ function loadSim(Sim, title, description = null, hasControls = true, hasGraphs =
             document.getElementById('sim-wrapper'),
             document.getElementById('inputs-container'),
             document.getElementById('graphs-container'),
-            document.getElementById('ctrl-wrapper'),
-            document.getElementById('attr-wrapper')
+            document.getElementById('sim-controls'),
+            document.getElementById('attr')
+        );
+
+        sim.setup(stopLoading)
+    }
+
+    if (isSubclassOf(Sim, ThreeJsSimulation)) { //  THREE.js logic
+        // init sim
+        const sim = new Sim(
+            document.getElementById('sim-wrapper'),
+            document.getElementById('inputs-container'),
+            document.getElementById('graphs-container'),
+            document.getElementById('sim-controls'),
+            document.getElementById('attr')
         );
 
         sim.setup(stopLoading)
@@ -78,8 +92,8 @@ function loadSim(Sim, title, description = null, hasControls = true, hasGraphs =
         const sim = new Sim(
             document.getElementById('sim-wrapper'),
             document.getElementById('inputs-container'),
-            document.getElementById('ctrl-wrapper'),
-            document.getElementById('attr-wrapper')
+            document.getElementById('sim-controls'),
+            document.getElementById('attr')
         );
 
         sim.setup(stopLoading);
@@ -179,7 +193,9 @@ page('/cyclotron', () => {
         loadSim(
             module.default, 
             'Cyclotron (Non-Relativistic)',
-            'This simulation showcases the acceleration of the cyclotron and the paths of different charged particles.'
+            'This simulation showcases the acceleration of the cyclotron and the paths of different charged particles.',
+            true,
+            false
         );
     });
 });

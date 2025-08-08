@@ -240,15 +240,15 @@ export default class ProjectileSimulation extends ThreeDSimulation {
 
     updateAttributes() {
         this.attributeWrapper.innerHTML = `
-            s (x) = ${this.particle.pos.x.toFixed(2)} m <br>
-			v (x) = ${this.particle.vel.x.toFixed(2)} m/s <br>
-			a (x) = ${this.particle.a.x.toFixed(2)} m/s² <br> <br>
-            s (y) = ${this.particle.pos.z.toFixed(2)} m <br>
-			v (y) = ${this.particle.vel.z.toFixed(2)} m/s <br>
-			a (y) = ${this.particle.a.z.toFixed(2)} m/s² <br> <br>
-			s (z) = ${-this.particle.pos.y.toFixed(2)} m <br>
-			v (z) = ${-this.particle.vel.y.toFixed(2)} m/s <br>
-			a (z) = ${-this.particle.a.y.toFixed(2)} m/s² <br>
+            s<sub>x</sub> = ${this.particle.pos.x.toFixed(2)} m <br>
+			v<sub>x</sub> = ${this.particle.vel.x.toFixed(2)} m/s <br>
+			a<sub>x</sub> = ${this.particle.a.x.toFixed(2)} m/s² <br> <br>
+            s<sub>y</sub> = ${this.particle.pos.z.toFixed(2)} m <br>
+			v<sub>y</sub> = ${this.particle.vel.z.toFixed(2)} m/s <br>
+			a<sub>y</sub> = ${this.particle.a.z.toFixed(2)} m/s² <br> <br>
+			s<sub>z</sub> = ${-this.particle.pos.y.toFixed(2)} m <br>
+			v<sub>z</sub> = ${-this.particle.vel.y.toFixed(2)} m/s <br>
+			a<sub>z</sub> = ${-this.particle.a.y.toFixed(2)} m/s² <br>
 	  	`;
     }
 }

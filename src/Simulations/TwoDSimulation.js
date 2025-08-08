@@ -58,7 +58,12 @@ export class TwoDSimulation {
         if (typeof paused !== Boolean) {
             paused = !this.paused;
         }
-
+        
         this.paused = paused;
+
+        if (!this.isStatic) {
+            if (this.paused) { this.pauseBtn.pause(); }
+            if (!this.paused) { this.pauseBtn.play(); }
+        }
     }
 }

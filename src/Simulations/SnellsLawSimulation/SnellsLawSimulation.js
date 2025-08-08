@@ -152,7 +152,8 @@ export default class SnellsLawSimulation extends ThreeDSimulation {
         this.downloadBtn = new Button(
             this.controlWrapper,
             this.download.bind(this),
-            'Data',
+            'data_table',
+            'data'
         );
 
         // load values from ui
