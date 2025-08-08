@@ -45,6 +45,11 @@ export default class CyclotronSimulation extends ThreeJsSimulation {
             'Potential Difference',
             'kV',
         );
+
+        // init data and graphs
+        this.data = {};
+        this.vGraph = this.makeGraph();
+        this.vChart = this.initChart(this.vGraph, 'Speed-Time', 'v (m/s)');
     }
 
     simInit() {
@@ -58,6 +63,11 @@ export default class CyclotronSimulation extends ThreeJsSimulation {
         this.pos = new THREE.Vector3(0, 0, 0);
         this.v = new THREE.Vector3(0, 0, 0);
         this.history = [];
+
+        // init data arrays
+        this.data.t = [];
+        this.data.v = [];
+        this.start = performance.now()
 
         // initialise particle geometry
         const particleGeometry = new THREE.SphereGeometry(50, 16, 16);
@@ -100,8 +110,8 @@ export default class CyclotronSimulation extends ThreeJsSimulation {
             opacity: 0.25,
             side: THREE.DoubleSide
         })
-        const electricFieldMesh = new THREE.Mesh(electricFieldGeometry, electricFieldMaterial);
-        this.scene.add(electricFieldMesh);
+        this.electricFieldMesh = new THREE.Mesh(electricFieldGeometry, electricFieldMaterial);
+        this.scene.add(this.electricFieldMesh);
 
         // history line init
         const initialPoints = new Float32Array(this.historyLimit * 3);
@@ -144,6 +154,12 @@ export default class CyclotronSimulation extends ThreeJsSimulation {
                     this.V = -Math.abs(this.V);
                 }
 
+                if (this.V > 0) {
+                    this.electricFieldMesh.material.color.set(0xa6bd6f);
+                } else {
+                    this.electricFieldMesh.material.color.set(0x9c6270);
+                }
+
                 const a =  new THREE.Vector3(this.q * this.V / this.m / 60, 0, 0);
                 this.v.add(a);
             }
@@ -179,7 +195,101 @@ export default class CyclotronSimulation extends ThreeJsSimulation {
         this.particleMesh.position.y = this.pos.y;
         this.particleMesh.position.z = this.pos.z;
 
+        // add data
+        let time = (performance.now() - this.start) * 1e-3;
+
+        // keep data to 100 readings
+        if (this.data.t.length > 500) {
+            this.data.t.shift();
+            this.data.v.shift();
+        }
+        if (!this.paused) {
+            this.data.t.push(time * 1e-8);
+            this.data.v.push(this.v.length() * 316e3);
+        }
+
+        if (this.selected == 'graphs') {
+            this.graph();
+        }
+
         this.updateAttributes();
+    }
+
+    graph() {
+        if (this.paused) return;
+
+        // update datasets
+        this.updateChart(this.vChart, this.data.t, this.data.v);
+    }
+
+    initChart(canvas, title, yLabel) {
+        return new Chart(canvas, {
+            type: 'line',
+            data: {
+                labels: [], // time data
+                datasets: [
+                    {
+                        label: title,
+                        data: [], // displacement, velocity, or acceleration data
+                        borderColor: '#6c46cc',
+                        borderWidth: 1,
+                        tension: 0.5, // smooth curve
+                        pointRadius: 1,
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                animation: false,
+                scales: {
+                    x: {
+                        type: 'linear',
+                        title: {
+                            display: true,
+                            text: 't/s',
+                            font: { family: 'CMUSerifRoman', size: 14 },
+                        },
+                        ticks: {
+                            callback: function (value, index, ticks) {
+                                // Format x-axis tick values to 2 decimal places
+                                return value.toFixed(10);
+                            },
+                        },
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: yLabel,
+                            font: { family: 'CMUSerifRoman', size: 14 },
+                        },
+                    },
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: title,
+                        font: { family: 'CMUSerifRoman', size: 16 },
+                        color: '#fff',
+                    },
+                    decimation: {
+                        enabled: true,
+                        algorithm: 'min-max',
+                        samples: 25,
+                    },
+                    legend: { display: false },
+                },
+                layout: { padding: { right: 0 } },
+                backgroundColor: '#1e1e1e',
+                color: '#fff',
+            },
+        });
+    }
+
+    updateChart(chart, labels, data) {
+        chart.data.labels = labels;
+        chart.data.datasets[0].data = data;
+        chart.update();
     }
 
     togglePause(paused = null) {

@@ -193,9 +193,7 @@ page('/cyclotron', () => {
         loadSim(
             module.default, 
             'Cyclotron (Non-Relativistic)',
-            'This simulation showcases the acceleration of the cyclotron and the paths of different charged particles.',
-            true,
-            false
+            'This simulation showcases the acceleration of the cyclotron and the paths of different charged particles.'
         );
     });
 });

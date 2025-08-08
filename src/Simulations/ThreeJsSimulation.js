@@ -61,6 +61,18 @@ export class ThreeJsSimulation {
     }
 
     simSetup(stopLoading) { // 3d sim setup wrapper
+        // clear the scene
+        if (this.scene) {
+            while (this.scene.children.length > 0) {
+                this.scene.remove(this.scene.children[0]);
+            }
+        }
+
+        // stop old loop
+        if (this.renderer) {
+            this.renderer.setAnimationLoop(null);
+        }
+
         // add reset button
         this.controlWrapper.innerHTML = '';
         this.runBtn = new ResetButton(
@@ -116,6 +128,7 @@ export class ThreeJsSimulation {
 
         // disable loading screen
         stopLoading();
+        this.paused = false;
     }
  
     simInit() { // initial sim logic wrapper
