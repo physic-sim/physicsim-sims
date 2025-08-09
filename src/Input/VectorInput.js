@@ -1,7 +1,7 @@
 import leftBracket from '../assets/Input/VectorInput/left-vector-bracket.png';
 import rightBracket from '../assets/Input/VectorInput/right-vector-bracket.png';
 import { NumInput } from './NumInput';
-import p5 from 'p5';
+import * as THREE from 'three'
 
 export class VectorInput {
     base;
@@ -66,7 +66,7 @@ export class VectorInput {
     }
 
     get() {
-        return new p5.Vector(this.x.get(), -this.z.get(), this.y.get());
+        return new THREE.Vector3(this.x.get(), -this.z.get(), this.y.get());
     }
 
     set(x, y, z) {

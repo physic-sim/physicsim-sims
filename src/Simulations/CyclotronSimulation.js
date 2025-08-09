@@ -5,11 +5,10 @@ import Chart from 'chart.js/auto';
 import * as THREE from 'three';
 
 export default class CyclotronSimulation extends ThreeJsSimulation {
+    // simulation constants
     historyLimit = 100;
-    pauseStart;
     d = 200;
     deeRadius = 2000;
-    timeScale = 1
 
     constructor(container, inputs, graphs, controls, attributes) {
         super(container, inputs, graphs, controls, attributes);
@@ -50,6 +49,8 @@ export default class CyclotronSimulation extends ThreeJsSimulation {
         this.data = {};
         this.vGraph = this.makeGraph();
         this.vChart = this.initChart(this.vGraph, 'Speed-Time', 'v (m/s)');
+        this.pdGraph = this.makeGraph();
+        this.pdChart = this.initChart(this.pdGraph, "Potential Difference-Time", "V (V)");
     }
 
     simInit() {
@@ -67,7 +68,10 @@ export default class CyclotronSimulation extends ThreeJsSimulation {
         // init data arrays
         this.data.t = [];
         this.data.v = [];
+        this.data.pd = [];
         this.start = performance.now()
+        this.pauseStart = 0;
+        this.cumulativePause = 0;
 
         // initialise particle geometry
         const particleGeometry = new THREE.SphereGeometry(50, 16, 16);
@@ -138,7 +142,7 @@ export default class CyclotronSimulation extends ThreeJsSimulation {
                 let b = new THREE.Vector3(0, this.B, 0);
                 b.cross(this.v).normalize();
                 let aMag = (this.v.length() * this.B * this.q) / this.m;
-                b.multiplyScalar(aMag / 60);
+                b.multiplyScalar(aMag / this.fps);
                 this.v.add(b);
                 this.v.setLength(mag);
             }
@@ -160,7 +164,7 @@ export default class CyclotronSimulation extends ThreeJsSimulation {
                     this.electricFieldMesh.material.color.set(0x9c6270);
                 }
 
-                const a =  new THREE.Vector3(this.q * this.V / this.m / 60, 0, 0);
+                const a =  new THREE.Vector3(this.q * this.V / (this.m * this.fps * this.d * 1e-2), 0, 0);
                 this.v.add(a);
             }
 
@@ -196,7 +200,7 @@ export default class CyclotronSimulation extends ThreeJsSimulation {
         this.particleMesh.position.z = this.pos.z;
 
         // add data
-        let time = (performance.now() - this.start) * 1e-3;
+        let time = (performance.now() - this.start - this.cumulativePause) * 1e-3;
 
         // keep data to 100 readings
         if (this.data.t.length > 500) {
@@ -206,6 +210,7 @@ export default class CyclotronSimulation extends ThreeJsSimulation {
         if (!this.paused) {
             this.data.t.push(time * 1e-8);
             this.data.v.push(this.v.length() * 316e3);
+            this.data.pd.push(this.V * 1e3);
         }
 
         if (this.selected == 'graphs') {
@@ -220,6 +225,7 @@ export default class CyclotronSimulation extends ThreeJsSimulation {
 
         // update datasets
         this.updateChart(this.vChart, this.data.t, this.data.v);
+        this.updateChart(this.pdChart, this.data.t, this.data.pd)
     }
 
     initChart(canvas, title, yLabel) {
@@ -296,9 +302,9 @@ export default class CyclotronSimulation extends ThreeJsSimulation {
         super.togglePause(paused)
 
         if (this.paused) {
-            this.pauseStart = Date.now();
+            this.pauseStart = performance.now();
         } else {
-            this.start = this.start + (performance.now() - this.pauseStart);
+            this.cumulativePause += (performance.now() - this.pauseStart);
         }
     }
 

@@ -124,11 +124,18 @@ export class ThreeJsSimulation {
 
         // run simulation init code
         this.simInit();
-        this.renderer.setAnimationLoop(this.animate.bind(this));
 
         // disable loading screen
         stopLoading();
+
+
+        this.lastTime = performance.now();
+        this.frameCount = 0;
+        this.fps = 60;
+
+        // run simulation
         this.paused = false;
+        this.renderer.setAnimationLoop(this.animate.bind(this));
     }
  
     simInit() { // initial sim logic wrapper
@@ -140,7 +147,19 @@ export class ThreeJsSimulation {
     }
 
     animate() { // animation loop
+        // fps measuring logic
+        this.frameCount++;
+        const now = performance.now();
+        const delta = now - this.lastTime;
+        if (delta >= 1000) {
+            this.fps = (this.frameCount / delta) * 1000;
+            this.frameCount = 0;
+            this.lastTime = now;
+        }
+
         this.simDraw(); // run sim draw logic
+
+        // render scene
         this.controls.update();
         this.renderer.render(this.scene, this.camera);
     }

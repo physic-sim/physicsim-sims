@@ -1,0 +1,69 @@
+:root {
+    --main-bg: #1e1e1e;
+    --off-bg: #080808;
+    --ctrl-bg: #ffffff;
+    --off-ctrl-bg: #ececec;
+    --alt-green: #a6bd6f;
+    --alt-purple: #6c46cc;
+    --alt-red: #9c6270;
+    --alt-blue: #aacadb;    
+}
+
+body, html {
+    padding: 0;
+    margin: 0;
+    background-color: #000;
+    font-family: 'CMUSerifRoman';
+    font-weight: normal;
+    font-style: normal;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Loading Window */
+.loading-wrapper {
+    position: absolute;
+    z-index: 1000;
+    width: 100vw;
+    height: 100vh;
+    background-color: #080808;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.loading-logo {
+    height: 100px;
+    padding: 1em;
+}
+
+.loading-txt {
+    font-family: 'CMUSerifRoman';
+    font-weight: normal;
+    font-style: normal;
+    color: #fff;
+    font-size: 2em;
+    padding-top: 1em;
+    width: 100vw;
+    text-align: center;
+    animation: hover 2s infinite ease-out alternate;
+}
+
+@keyframes hover {
+
+    from {
+        transform: translateY(10px);
+    }
+
+    to {
+        transform: translateY(-10px);
+    }
+}
