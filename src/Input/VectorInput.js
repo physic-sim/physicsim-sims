@@ -66,7 +66,7 @@ export class VectorInput {
     }
 
     get() {
-        return new THREE.Vector3(this.x.get(), -this.z.get(), this.y.get());
+        return new THREE.Vector3(this.x.get(), this.z.get(), this.y.get());
     }
 
     set(x, y, z) {

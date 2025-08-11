@@ -84,12 +84,13 @@ export default class CircularMotionSimulation extends ThreeJsSimulation {
         );
     }
 
-    simInit(p) {
+    simInit() {
         // add custom btns
         this.toggleFrameRefBtn = new Button(
             this.controlWrapper,
             (() => this.toggleFrameRef()).bind(this),
-            'Frame Ref.',
+            'switch_camera',
+            "camera"
         );
 
         // init data
@@ -115,29 +116,35 @@ export default class CircularMotionSimulation extends ThreeJsSimulation {
         this.pos = new THREE.Vector3(this.c.x + this.r, 0, 0);
 
         // initialise particle geometry
-        const particleGeometry = new THREE.SphereGeometry(50, 16, 16);
-        const particleMaterial = new THREE.MeshBasicMaterial({ color: 0xaacadb });
+        const particleGeometry = new THREE.SphereGeometry(10 * Math.sqrt(this.mass), 16, 16);
+        const particleMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0xa6bd6f, 
+            transparent: true, 
+            opacity: 0.75 
+        });
         this.particleMesh = new THREE.Mesh(particleGeometry, particleMaterial);
         this.scene.add(this.particleMesh); 
 
         // add axis geometry
         const xPoints = [];
-        xPoints.push(new THREE.Vector3(-this.size, 0, 0));
-        xPoints.push(new THREE.Vector3(this.size, 0, 0));
+        xPoints.push(new THREE.Vector3(-this.r, 0, 0));
+        xPoints.push(new THREE.Vector3(this.r, 0, 0));
         const xAxisGeometry = new THREE.BufferGeometry().setFromPoints(xPoints);
         
         const yPoints = [];
-        yPoints.push(new THREE.Vector3(0, -this.size, 0));
-        yPoints.push(new THREE.Vector3(0, this.size, 0));
+        yPoints.push(new THREE.Vector3(0, -this.r, 0));
+        yPoints.push(new THREE.Vector3(0, this.r, 0));
         const yAxisGeometry = new THREE.BufferGeometry().setFromPoints(yPoints);
         
         const zPoints = [];
-        zPoints.push(new THREE.Vector3(0, 0, -this.size));
-        zPoints.push(new THREE.Vector3(0, 0, this.size));
+        zPoints.push(new THREE.Vector3(0, 0, -this.r));
+        zPoints.push(new THREE.Vector3(0, 0, this.r));
         const zAxisGeometry = new THREE.BufferGeometry().setFromPoints(zPoints);
         
         const axisMaterial = new THREE.LineBasicMaterial({
-            color: 0xdddddd
+            color: 0xdddddd,
+            transparent: true,
+            opacity: 0.5,
         })
 
         const xAxis = new THREE.Line(xAxisGeometry, axisMaterial);
@@ -147,8 +154,34 @@ export default class CircularMotionSimulation extends ThreeJsSimulation {
         this.scene.add(yAxis);
         this.scene.add(zAxis)
 
+        // initiate arrows
+        this.displacementArrow = this.drawArrow(
+            this.c,
+            this.c.clone().add(new THREE.Vector3(this.pos.x, 0, 0)),
+            this.r,
+            0xa6bd6f,
+        );
+        this.velocityArrow = this.drawArrow(
+            this.pos,
+            new THREE.Vector3(0, 0, 0),
+            0, 
+            0x6c46cc,
+        );
+        this.accelerationArrow = this.drawArrow(
+            this.pos,
+            new THREE.Vector3(0, 0, 0),
+            0, 
+            0x9c6270,
+        )
+        this.centrifugalArrow = this.drawArrow(
+            this.pos,
+            new THREE.Vector3(0, 0, 0),
+            0,
+            0x9c6270
+        )
+
         // calibrate camera        
-        this.camera.position.set(this.size * 1.5, this.size * 1.5, this.size * 1.5);
+        this.camera.position.set(this.r * 1.5, this.r * 1.5, this.r * 1.5);
         this.controls.target.set(0, 0, 0);
         this.controls.update();
     }
@@ -156,14 +189,17 @@ export default class CircularMotionSimulation extends ThreeJsSimulation {
     simDraw() {
         // frame of reference control
         if (this.rotationalRef) {
+            this.scene.add(this.centrifugalArrow)
             this.camera.position.set(this.c.x, this.c.y + 500, this.c.z);
-            this.camera.target.set(this.pos.x, this.pos.y, this.pos.z);
+            this.controls.target.set(this.pos.x, this.pos.y, this.pos.z);
+            this.controls.update();
+        } else {
+            this.scene.remove(this.centrifugalArrow);
         }
 
         // split velocity into tangential and non-tangential
         let n = this.c.clone().sub(this.pos);
         n.normalize();
-
         let vn = this.v.dot(n);
         let vnv = n.clone().multiplyScalar(vn);
         let vpv = this.v.clone().sub(vnv);
@@ -171,64 +207,50 @@ export default class CircularMotionSimulation extends ThreeJsSimulation {
         // calculate centripetal acceleration
         let a = Math.pow(vpv.length(), 2) / this.r;
         let av = n.clone().multiplyScalar(a);
-        let avt = av.multiplyScalar(1 / this.fps);
+        let avt = av.clone().multiplyScalar(this.deltaT);
 
-        // draw arrows
-        this.drawArrow(
-            this.pos,
-            av.clone().multiplyScalar(this.mass / this.fps),
-            3,
-            0x00ff00,
-        );
-        this.drawArrow(
-            this.pos,
-            vpv.clone().multiplyScalar(1 / this.fps),
-            3,
-            0xff0000,
-        );
-        this.drawArrow(
-            this.c,
-            this.c.clone().add(new THREE.Vector3(this.pos.x, 0, 0)),
-            1,
-            0x00ff00,
-        );
+        // update arrows  
+        this.displacementArrow.position.copy(this.c);
+        this.displacementArrow.setDirection(new THREE.Vector3(this.pos.x, 0, 0).normalize())
+        this.displacementArrow.setLength(Math.abs(this.pos.x));
+
+        this.velocityArrow.position.copy(this.pos);
+        this.velocityArrow.setDirection(vpv.clone().multiplyScalar(this.deltaT).normalize());
+        this.velocityArrow.setLength(this.v.length());
+
+        this.accelerationArrow.position.copy(this.pos);
+        this.accelerationArrow.setDirection(av.clone().multiplyScalar(this.mass * this.deltaT).normalize());
+        this.accelerationArrow.setLength(Math.abs(a) * this.mass / 2)
 
         if (this.rotationalRef) {
-            this.drawArrow(
-                this.pos,
-                av.clone().multiplyScalar((-1 * this.mass) / this.fps),
-                3,
-                0x00ff00,
-            );
+            this.centrifugalArrow.position.copy(this.pos);
+            this.centrifugalArrow.setDirection(av.clone().multiplyScalar((-1 * this.mass) * this.deltaT).normalize());
+            this.centrifugalArrow.setLength(Math.abs(a) * this.mass / 2)
         }
 
         // update position and velocity vectors
         if (!this.paused) {
             this.v.add(avt);
-            let vt = this.v.clone().multiply(1 / this.fps);
+            let vt = this.v.clone().multiplyScalar(this.deltaT);
             this.pos.add(vt);
-
             // update particle position
-            this.particleMesh.position.x = this.pos.x;
-            this.particleMesh.position.y = this.pos.y;
-            this.particleMesh.position.z = this.pos.z;
+            this.particleMesh.position.copy(this.pos);
+
+            // update data
+            let t = (performance.now() - this.start - this.cumulativePause) * 1e-3;
+
+            // keep data to 200 readings
+            if (this.data.t.length > 250) {
+                this.data.t.shift();
+                this.data.s.shift();
+                this.data.v.shift();
+                this.data.a.shift();
+            }
+            this.data.t.push(t);
+            this.data.s.push(this.pos.x / this.sf);
+            this.data.v.push(this.v.x / this.sf);
+            this.data.a.push(av.x / this.sf);
         }
-
-        // update data
-        let t = (performance.now() - this.start - this.cumulativePause) * 1e-3;
-
-        // keep data to 100 readings
-        if (this.data.t.length > 500) {
-            this.data.t.shift();
-            this.data.s.shift();
-            this.data.v.shift();
-            this.data.a.shift();
-        }
-
-        this.data.t.push(t);
-        this.data.s.push(this.pos.x / this.sf);
-        this.data.v.push(this.v.x / this.sf);
-        this.data.a.push(av.x / this.sf);
 
         if (this.selected == 'graphs') {
             this.graph();
@@ -236,22 +258,23 @@ export default class CircularMotionSimulation extends ThreeJsSimulation {
     }
 
     drawArrow(base, vec, length, colour) {
-        const arrowHelper = new THREE.ArrowHelper(
+        const arrow = new THREE.ArrowHelper(
             vec.clone().normalize(), 
             base,
             length, 
-            colour
+            colour,
         );
-        this.scene.add(arrowHelper)
+        this.scene.add(arrow);
+        return arrow;
     }
 
     graph() {
-        if (this.paused) return;
-
-        // update datasets
-        this.updateChart(this.sChart, this.data.t, this.data.s);
-        this.updateChart(this.vChart, this.data.t, this.data.v);
-        this.updateChart(this.aChart, this.data.t, this.data.a);
+        if (this.selected == 'graphs') {
+            // update datasets
+            this.updateChart(this.sChart, this.data.t, this.data.s);
+            this.updateChart(this.vChart, this.data.t, this.data.v);
+            this.updateChart(this.aChart, this.data.t, this.data.a);
+        }
     }
 
     initChart(canvas, title, yLabel) {
@@ -340,12 +363,13 @@ export default class CircularMotionSimulation extends ThreeJsSimulation {
         }
     }
 
-    toggleFrameRef(p) {
+    toggleFrameRef() {
         this.rotationalRef = !this.rotationalRef;
         // reset camera
         if (!this.rotationalRef) {
-            this.cam = p.createCamera();
-            this.cam.lookAt(this.c.x, this.c.y, this.c.z);
+            this.controls.target.set(this.c.x, this.c.y, this.c.z);
+            this.camera.position.set(this.r * 1.5, this.r * 1.5, this.r * 1.5);
+            this.controls.update();
         }
     }
 

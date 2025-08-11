@@ -57,6 +57,21 @@ export class ThreeJsSimulation {
             }
         });
 
+        // pause simulation when document is hidden
+        document.addEventListener("visibilitychange", (e) => {
+            if (document.hidden) {
+                if (!this.pausedForVisibility) {
+                    this.pausedForVisibility = true;
+                    this.prevPauseState = this.paused;
+                    this.togglePause(true);
+                }
+            } else if (this.paused) {
+                this.pausedForVisibility = false;
+                this.isFirstFrame = true;
+                this.togglePause(this.prevPauseState);
+            }
+        })
+
        this.simSetup(stopLoading); // run setup of simulation
     }
 
@@ -129,9 +144,10 @@ export class ThreeJsSimulation {
         stopLoading();
 
 
+        // time scaling setup
         this.lastTime = performance.now();
-        this.frameCount = 0;
-        this.fps = 60;
+        this.deltaTime = 0;
+        this.isFirstFrame = true;
 
         // run simulation
         this.paused = false;
@@ -150,11 +166,12 @@ export class ThreeJsSimulation {
         // fps measuring logic
         this.frameCount++;
         const now = performance.now();
-        const delta = now - this.lastTime;
-        if (delta >= 1000) {
-            this.fps = (this.frameCount / delta) * 1000;
-            this.frameCount = 0;
-            this.lastTime = now;
+        this.deltaT = (now - this.lastTime) * 1e-3;
+        this.lastTime = now;
+
+        if (this.isFirstFrame) { // set base lines of first frame for scaling
+            this.isFirstFrame = false;
+            return;
         }
 
         this.simDraw(); // run sim draw logic
@@ -165,7 +182,7 @@ export class ThreeJsSimulation {
     }
 
     togglePause(paused = null) {
-        if (typeof paused !== Boolean) {
+        if (typeof paused !== 'boolean') {
             paused = !this.paused;
         }
         

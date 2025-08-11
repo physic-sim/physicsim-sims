@@ -23,6 +23,18 @@ export class NumInput {
         this.input.required = true;
         this.input.value = Number(val);
         base.appendChild(this.input);
+        
+        // add auto scroll to top to prevent permanent scrolling on mobile
+        this.input.addEventListener("blur", () => {
+            setTimeout(() => {
+                // force a repaint (sometimes needed on iOS)
+                document.body.style.height = "101%";
+                window.scrollTo(0, 0);
+                requestAnimationFrame(() => {
+                    document.body.style.height = "";
+                });
+            }, 250); // delay lets keyboard fully close
+        });
     }
 
     get() {

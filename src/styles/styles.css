@@ -290,7 +290,7 @@
     padding: 1em;
     font-family: 'CMUSerifRoman';
     font-weight: normal;
-    font-style: normal;
+    font-style: medium;
     font-size: 15px;
     color: #c6c6c6;
 }
@@ -325,7 +325,7 @@
     .attr-wrapper {
         padding-top: 5em;
         justify-content: flex-start;
-        font-size: small;
+        font-size: medium;
         color: #c6c6c6;
     }
 

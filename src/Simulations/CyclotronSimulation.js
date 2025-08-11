@@ -116,7 +116,7 @@ export default class CyclotronSimulation extends ThreeJsSimulation {
         })
         this.electricFieldMesh = new THREE.Mesh(electricFieldGeometry, electricFieldMaterial);
         this.scene.add(this.electricFieldMesh);
-
+        
         // history line init
         const initialPoints = new Float32Array(this.historyLimit * 3);
         this.historyGeometry = new THREE.BufferGeometry();
@@ -142,7 +142,7 @@ export default class CyclotronSimulation extends ThreeJsSimulation {
                 let b = new THREE.Vector3(0, this.B, 0);
                 b.cross(this.v).normalize();
                 let aMag = (this.v.length() * this.B * this.q) / this.m;
-                b.multiplyScalar(aMag / this.fps);
+                b.multiplyScalar(aMag * this.deltaT);
                 this.v.add(b);
                 this.v.setLength(mag);
             }
@@ -164,7 +164,7 @@ export default class CyclotronSimulation extends ThreeJsSimulation {
                     this.electricFieldMesh.material.color.set(0x9c6270);
                 }
 
-                const a =  new THREE.Vector3(this.q * this.V / (this.m * this.fps * this.d * 1e-2), 0, 0);
+                const a =  new THREE.Vector3(this.q * this.V * this.deltaT / (this.m * this.d * 1e-2), 0, 0);
                 this.v.add(a);
             }
 
@@ -195,15 +195,13 @@ export default class CyclotronSimulation extends ThreeJsSimulation {
         }
 
         // update particle position
-        this.particleMesh.position.x = this.pos.x;
-        this.particleMesh.position.y = this.pos.y;
-        this.particleMesh.position.z = this.pos.z;
+        this.particleMesh.position.copy(this.pos);
 
         // add data
         let time = (performance.now() - this.start - this.cumulativePause) * 1e-3;
 
-        // keep data to 100 readings
-        if (this.data.t.length > 500) {
+        // keep data to 250 readings
+        if (this.data.t.length > 250) {
             this.data.t.shift();
             this.data.v.shift();
         }
@@ -213,19 +211,17 @@ export default class CyclotronSimulation extends ThreeJsSimulation {
             this.data.pd.push(this.V * 1e3);
         }
 
-        if (this.selected == 'graphs') {
-            this.graph();
-        }
+        this.graph();
 
         this.updateAttributes();
     }
 
     graph() {
-        if (this.paused) return;
-
-        // update datasets
-        this.updateChart(this.vChart, this.data.t, this.data.v);
-        this.updateChart(this.pdChart, this.data.t, this.data.pd)
+        if (this.selected == 'graphs') {
+            // update datasets
+            this.updateChart(this.vChart, this.data.t, this.data.v);
+            this.updateChart(this.pdChart, this.data.t, this.data.pd)
+        }
     }
 
     initChart(canvas, title, yLabel) {

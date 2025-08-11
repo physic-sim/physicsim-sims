@@ -205,9 +205,7 @@ export default class InterferenceSimulation extends TwoDSimulation {
         this.obs.y = p.mouseY;
 
         if (!this.paused) {
-            this.togglePause();
-            this.pauseBtn.onClick();
-            this.pauseBtn.paused = true;
+            this.togglePause(true);
         }
     }
 

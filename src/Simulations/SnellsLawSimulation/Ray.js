@@ -90,6 +90,7 @@ export class Ray {
             p.push();
             p.translate(intersection);
             p.stroke(255, 255, 255, 240);
+            p.strokeCap(p.SQUARE);
             p.line(
                 plane[1].x * -7.5,
                 plane[1].y * -7.5,

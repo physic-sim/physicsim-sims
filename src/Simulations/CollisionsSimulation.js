@@ -120,7 +120,7 @@ export default class CollisionsSimulation extends ThreeJsSimulation {
         // init particles
         this.particleA = new Particle(
             Math.abs(this.massA.get()),
-            this.posA.get(),
+            this.posA.get().multiplyScalar(this.sf),
             this.velA.get(),
             0xaacadb,
             this.scene
@@ -128,7 +128,7 @@ export default class CollisionsSimulation extends ThreeJsSimulation {
 
         this.particleB = new Particle(
             Math.abs(this.massB.get()),
-            this.posB.get(),
+            this.posB.get().multiplyScalar(this.sf),
             this.velB.get(),
             0x9c6270,
             this.scene
@@ -151,7 +151,9 @@ export default class CollisionsSimulation extends ThreeJsSimulation {
         const zAxisGeometry = new THREE.BufferGeometry().setFromPoints(zPoints);
         
         const axisMaterial = new THREE.LineBasicMaterial({
-            color: 0xdddddd
+            color: 0xdddddd,
+            transparent: true,
+            opacity: 0.5,
         })
 
         const xAxis = new THREE.Line(xAxisGeometry, axisMaterial);
@@ -172,8 +174,8 @@ export default class CollisionsSimulation extends ThreeJsSimulation {
         if (!this.paused) {
             this.particleA.collide(this.particleB, this.e);
 
-            this.particleA.update(this.sf, this.fps);
-            this.particleB.update(this.sf, this.fps);
+            this.particleA.update(this.sf, this.deltaT);
+            this.particleB.update(this.sf, this.deltaT);
 
             this.particleA.edges(this.size);
             this.particleB.edges(this.size);
@@ -187,7 +189,7 @@ export default class CollisionsSimulation extends ThreeJsSimulation {
             this.particleA.velocity.length().toFixed(2) == 0 &&
             this.particleB.velocity.length().toFixed(2) == 0
         ) {
-            this.paused = true;
+            this.togglePause(true);
         }
 
         // add data
@@ -204,20 +206,18 @@ export default class CollisionsSimulation extends ThreeJsSimulation {
         this.data.z[1] = this.particleB.velocity.y * this.particleB.mass;
         this.data.z[2] = this.data.z[0] + this.data.z[1];
 
-        if (this.selected == 'graphs') {
-            this.graph();
-        }
+        this.graph();
 
         this.updateAttributes();
     }
 
     graph() {
-        if (this.paused) return;
-
-        // update datasets
-        this.updateChart(this.xChart, this.data.particles, this.data.x);
-        this.updateChart(this.yChart, this.data.particles, this.data.y);
-        this.updateChart(this.zChart, this.data.particles, this.data.z);
+        if (this.selected == 'graphs') {
+            // update datasets
+            this.updateChart(this.xChart, this.data.particles, this.data.x);
+            this.updateChart(this.yChart, this.data.particles, this.data.y);
+            this.updateChart(this.zChart, this.data.particles, this.data.z);
+        }
     }
 
     initChart(canvas, title, yLabel) {
@@ -382,10 +382,10 @@ class Particle {
         }
     }
 
-    update(sf, fps) {
+    update(sf, deltaT) {
         this.velocity.add(this.acceleration);
         this.position.add(
-            this.velocity.clone().multiplyScalar((1 / fps) * sf)
+            this.velocity.clone().multiplyScalar(deltaT * sf)
         );
         this.acceleration.multiplyScalar(0);
     }
@@ -418,8 +418,6 @@ class Particle {
 
     show() {
         // update particle position
-        this.particleMesh.position.x = this.position.x;
-        this.particleMesh.position.y = this.position.y;
-        this.particleMesh.position.z = this.position.z;
+        this.particleMesh.position.copy(this.position)
     }
 }

@@ -42,8 +42,9 @@ export class BoxGeometry {
         // draw box geometry
         p.push();
         p.translate(this.c);
-        p.stroke(255, 255, 255, 200);
-        p.fill(0, 200, 255, 100);
+        p.stroke(255, 255, 255);
+        p.strokeWeight(0.5)
+        p.fill("#aacadb80");
         p.box(this.w, this.h, this.d, 4, 4);
         p.pop();
     }
