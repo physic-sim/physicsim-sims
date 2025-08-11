@@ -1,10 +1,11 @@
-import { ThreeDSimulation } from './ThreeDSimulation';
+import { ThreeJsSimulation } from './ThreeJsSimulation';
 import { ValueInput } from '../Input/ValueInput';
 import { Button } from '../Controls/Button';
 import Chart from 'chart.js/auto';
-import p5 from 'p5';
+import * as THREE from 'three';
 
-export default class CircularMotionSimulation extends ThreeDSimulation {
+export default class CircularMotionSimulation extends ThreeJsSimulation {
+    // simulation constants
     rotationalRef = false;
     angularPref = false;
     sf = 10;
@@ -83,12 +84,13 @@ export default class CircularMotionSimulation extends ThreeDSimulation {
         );
     }
 
-    init(p) {
+    simInit() {
         // add custom btns
         this.toggleFrameRefBtn = new Button(
             this.controlWrapper,
-            (() => this.toggleFrameRef(p)).bind(this),
-            'Frame Ref.',
+            (() => this.toggleFrameRef()).bind(this),
+            'switch_camera',
+            "camera"
         );
 
         // init data
@@ -96,168 +98,183 @@ export default class CircularMotionSimulation extends ThreeDSimulation {
         this.data.s = [];
         this.data.v = [];
         this.data.a = [];
-        this.start = p.millis();
+        this.start = performance.now();
+        this.pauseStart = 0;
+        this.cumulativePause = 0;
 
         // init position
         this.r = Math.abs(this.rInput.get() * this.sf);
         this.mass = Math.abs(this.massInput.get());
         if (this.angularPref) {
-            this.v = new p5.Vector(0, 0, this.omegaInput.get() * this.r);
+            this.v = new THREE.Vector3(0, 0, this.omegaInput.get() * this.r);
             this.vInput.set((this.v.z / this.sf).toFixed(2));
         } else {
-            this.v = new p5.Vector(0, 0, this.vInput.get() * this.sf);
+            this.v = new THREE.Vector3(0, 0, this.vInput.get() * this.sf);
             this.omegaInput.set((this.v.z / this.r).toFixed(2));
         }
-        this.c = p.createVector(0, 0, 0);
-        this.pos = p.createVector(this.c.x + this.r, 0, 0);
+        this.c = new THREE.Vector3(0, 0, 0);
+        this.pos = new THREE.Vector3(this.c.x + this.r, 0, 0);
+
+        // initialise particle geometry
+        const particleGeometry = new THREE.SphereGeometry(10 * Math.sqrt(this.mass), 16, 16);
+        const particleMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0xa6bd6f, 
+            transparent: true, 
+            opacity: 0.75 
+        });
+        this.particleMesh = new THREE.Mesh(particleGeometry, particleMaterial);
+        this.scene.add(this.particleMesh); 
+
+        // add axis geometry
+        const xPoints = [];
+        xPoints.push(new THREE.Vector3(-this.r, 0, 0));
+        xPoints.push(new THREE.Vector3(this.r, 0, 0));
+        const xAxisGeometry = new THREE.BufferGeometry().setFromPoints(xPoints);
+        
+        const yPoints = [];
+        yPoints.push(new THREE.Vector3(0, -this.r, 0));
+        yPoints.push(new THREE.Vector3(0, this.r, 0));
+        const yAxisGeometry = new THREE.BufferGeometry().setFromPoints(yPoints);
+        
+        const zPoints = [];
+        zPoints.push(new THREE.Vector3(0, 0, -this.r));
+        zPoints.push(new THREE.Vector3(0, 0, this.r));
+        const zAxisGeometry = new THREE.BufferGeometry().setFromPoints(zPoints);
+        
+        const axisMaterial = new THREE.LineBasicMaterial({
+            color: 0xdddddd,
+            transparent: true,
+            opacity: 0.5,
+        })
+
+        const xAxis = new THREE.Line(xAxisGeometry, axisMaterial);
+        const yAxis = new THREE.Line(yAxisGeometry, axisMaterial);
+        const zAxis = new THREE.Line(zAxisGeometry, axisMaterial);
+        this.scene.add(xAxis);
+        this.scene.add(yAxis);
+        this.scene.add(zAxis)
+
+        // initiate arrows
+        this.displacementArrow = this.drawArrow(
+            this.c,
+            this.c.clone().add(new THREE.Vector3(this.pos.x, 0, 0)),
+            this.r,
+            0xa6bd6f,
+        );
+        this.velocityArrow = this.drawArrow(
+            this.pos,
+            new THREE.Vector3(0, 0, 0),
+            0, 
+            0x6c46cc,
+        );
+        this.accelerationArrow = this.drawArrow(
+            this.pos,
+            new THREE.Vector3(0, 0, 0),
+            0, 
+            0x9c6270,
+        )
+        this.centrifugalArrow = this.drawArrow(
+            this.pos,
+            new THREE.Vector3(0, 0, 0),
+            0,
+            0x9c6270
+        )
+
+        // calibrate camera        
+        this.camera.position.set(this.r * 1.5, this.r * 1.5, this.r * 1.5);
+        this.controls.target.set(0, 0, 0);
+        this.controls.update();
     }
 
-    frame(p) {
-        p.ambientLight(200);
-
+    simDraw() {
         // frame of reference control
         if (this.rotationalRef) {
-            this.cam = p.createCamera();
-            p.push();
-            this.cam.setPosition(this.c.x, this.c.y + 500, this.c.z);
-            this.cam.lookAt(this.pos.x, this.pos.y, this.pos.z);
-            this.cam.ortho();
-            p.pop();
-        } else if (this.rotationalRef == false && this.rotateControl) {
-            p.perspective(0.4, this.width / this.height, 10, 500000);
-            let options = {
-                disableTouchActions: false,
-                freeRotation: false,
-            };
-            p.orbitControl(1, 1, 1, options);
+            this.scene.add(this.centrifugalArrow)
+            this.camera.position.set(this.c.x, this.c.y + 500, this.c.z);
+            this.controls.target.set(this.pos.x, this.pos.y, this.pos.z);
+            this.controls.update();
+        } else {
+            this.scene.remove(this.centrifugalArrow);
         }
-
-        // draw centre
-        p.push();
-        p.translate(this.c);
-        p.stroke(255, 255, 255, 100);
-        p.line(-this.r, 0, 0, this.r, 0, 0);
-        p.line(0, -10, 0, 0, 10, 0);
-        p.line(0, 0, -this.r, 0, 0, this.r);
-        p.pop();
 
         // split velocity into tangential and non-tangential
-        let n = p5.Vector.sub(this.c, this.pos);
+        let n = this.c.clone().sub(this.pos);
         n.normalize();
-
-        let vn = p5.Vector.dot(this.v, n);
-        let vnv = p5.Vector.mult(n, vn);
-        let vpv = p5.Vector.sub(this.v, vnv);
+        let vn = this.v.dot(n);
+        let vnv = n.clone().multiplyScalar(vn);
+        let vpv = this.v.clone().sub(vnv);
 
         // calculate centripetal acceleration
-        let a = Math.pow(vpv.mag(), 2) / this.r;
-        let av = p5.Vector.mult(n, a);
-        let avt = p5.Vector.mult(av, 1 / p.getTargetFrameRate());
+        let a = Math.pow(vpv.length(), 2) / this.r;
+        let av = n.clone().multiplyScalar(a);
+        let avt = av.clone().multiplyScalar(this.deltaT);
 
-        // draw arrows
-        this.drawArrow(
-            p,
-            this.pos,
-            p5.Vector.mult(av, this.mass / p.getTargetFrameRate()),
-            3,
-            2,
-            [0, 255, 0],
-        );
-        this.drawArrow(
-            p,
-            this.pos,
-            p5.Vector.mult(vpv, 1 / p.getTargetFrameRate()),
-            3,
-            10,
-            [255, 0, 0],
-        );
-        this.drawArrow(
-            p,
-            this.c,
-            p5.Vector.add(this.c, p.createVector(this.pos.x, 0, 0)),
-            0,
-            1,
-            [108, 70, 204],
-        );
+        // update arrows  
+        this.displacementArrow.position.copy(this.c);
+        this.displacementArrow.setDirection(new THREE.Vector3(this.pos.x, 0, 0).normalize())
+        this.displacementArrow.setLength(Math.abs(this.pos.x));
+
+        this.velocityArrow.position.copy(this.pos);
+        this.velocityArrow.setDirection(vpv.clone().multiplyScalar(this.deltaT).normalize());
+        this.velocityArrow.setLength(this.v.length());
+
+        this.accelerationArrow.position.copy(this.pos);
+        this.accelerationArrow.setDirection(av.clone().multiplyScalar(this.mass * this.deltaT).normalize());
+        this.accelerationArrow.setLength(Math.abs(a) * this.mass / 2)
 
         if (this.rotationalRef) {
-            this.drawArrow(
-                p,
-                this.pos,
-                p5.Vector.mult(av, (-1 * this.mass) / p.getTargetFrameRate()),
-                3,
-                2,
-                [0, 255, 0],
-            );
+            this.centrifugalArrow.position.copy(this.pos);
+            this.centrifugalArrow.setDirection(av.clone().multiplyScalar((-1 * this.mass) * this.deltaT).normalize());
+            this.centrifugalArrow.setLength(Math.abs(a) * this.mass / 2)
         }
-
-        // draw mass
-        p.push();
-        p.fill(166, 189, 111);
-        p.translate(this.pos);
-        p.noStroke();
-        p.sphere(Math.sqrt(this.mass) * 2, 24, 24);
-        p.pop();
 
         // update position and velocity vectors
         if (!this.paused) {
             this.v.add(avt);
-            let vt = p5.Vector.mult(this.v, 1 / p.getTargetFrameRate());
+            let vt = this.v.clone().multiplyScalar(this.deltaT);
             this.pos.add(vt);
+            // update particle position
+            this.particleMesh.position.copy(this.pos);
+
+            // update data
+            let t = (performance.now() - this.start - this.cumulativePause) * 1e-3;
+
+            // keep data to 200 readings
+            if (this.data.t.length > 250) {
+                this.data.t.shift();
+                this.data.s.shift();
+                this.data.v.shift();
+                this.data.a.shift();
+            }
+            this.data.t.push(t);
+            this.data.s.push(this.pos.x / this.sf);
+            this.data.v.push(this.v.x / this.sf);
+            this.data.a.push(av.x / this.sf);
         }
-
-        // update data
-        let t = (p.millis() - this.start) * 0.001;
-
-        // keep data to 100 readings
-        if (this.data.t.length > 500) {
-            this.data.t.shift();
-            this.data.s.shift();
-            this.data.v.shift();
-            this.data.a.shift();
-        }
-
-        this.data.t.push(t);
-        this.data.s.push(this.pos.x / this.sf);
-        this.data.v.push(this.v.x / this.sf);
-        this.data.a.push(av.x / this.sf);
 
         if (this.selected == 'graphs') {
             this.graph();
         }
     }
 
-    drawArrow(p, base, vec, arrowSize, scale, colour) {
-        p.push();
-        p.translate(base.x, base.y, base.z);
-        let dir = vec.copy().normalize();
-        let len = vec.mag() * scale;
-
-        // rotate the arrow
-        let rotationAxis = p.createVector(0, 1, 0).cross(dir);
-        let rotationAngle = p.acos(p.createVector(0, 1, 0).dot(dir));
-        p.rotate(rotationAngle, rotationAxis);
-
-        // draw the arrow shaft
-        p.fill(colour[0], colour[1], colour[2]);
-        p.stroke(colour[0], colour[1], colour[2]);
-        p.strokeWeight(2);
-        p.line(0, 0, 0, 0, len, 0);
-
-        // draw the arrowhead
-        p.translate(0, len, 0);
-        p.noStroke();
-        p.cone(arrowSize, arrowSize * 2);
-        p.pop();
+    drawArrow(base, vec, length, colour) {
+        const arrow = new THREE.ArrowHelper(
+            vec.clone().normalize(), 
+            base,
+            length, 
+            colour,
+        );
+        this.scene.add(arrow);
+        return arrow;
     }
 
     graph() {
-        if (this.paused) return;
-
-        // update datasets
-        this.updateChart(this.sChart, this.data.t, this.data.s);
-        this.updateChart(this.vChart, this.data.t, this.data.v);
-        this.updateChart(this.aChart, this.data.t, this.data.a);
+        if (this.selected == 'graphs') {
+            // update datasets
+            this.updateChart(this.sChart, this.data.t, this.data.s);
+            this.updateChart(this.vChart, this.data.t, this.data.v);
+            this.updateChart(this.aChart, this.data.t, this.data.a);
+        }
     }
 
     initChart(canvas, title, yLabel) {
@@ -346,12 +363,23 @@ export default class CircularMotionSimulation extends ThreeDSimulation {
         }
     }
 
-    toggleFrameRef(p) {
+    toggleFrameRef() {
         this.rotationalRef = !this.rotationalRef;
         // reset camera
         if (!this.rotationalRef) {
-            this.cam = p.createCamera();
-            this.cam.lookAt(this.c.x, this.c.y, this.c.z);
+            this.controls.target.set(this.c.x, this.c.y, this.c.z);
+            this.camera.position.set(this.r * 1.5, this.r * 1.5, this.r * 1.5);
+            this.controls.update();
+        }
+    }
+
+    togglePause(paused = null) {
+        super.togglePause(paused)
+
+        if (this.paused) {
+            this.pauseStart = performance.now();
+        } else {
+            this.cumulativePause += (performance.now() - this.pauseStart);
         }
     }
 }

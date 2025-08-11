@@ -9,12 +9,13 @@ This repository is the home of all simulations written for Physicsim. It also co
 This repository makes use of the following libraries:
 
 - p5.js
+- THREE.js
 - Chart.js
 - webpack
 
 This repository is made under the MIT License.
 
-See [Physicsim Legacy]('https://github.com/physic-sim/physicsim-legacy') for the original simulation code.
+See [Physicsim Legacy]('https://github.com/physic-sim/physicsim-legacy') for the original simulation code for many core simulations.
 
 __Isaac Barker__
 <br>[isaacbarker.net](https://www.isaacbarker.net)<br>

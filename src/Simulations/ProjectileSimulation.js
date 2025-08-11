@@ -1,13 +1,14 @@
-import { ThreeDSimulation } from './ThreeDSimulation';
+import { ThreeJsSimulation } from './ThreeJsSimulation';
 import { ValueInput } from '../Input/ValueInput';
 import { VectorInput } from '../Input/VectorInput';
 import { SliderInput } from '../Input/SliderInput';
 import Chart from 'chart.js/auto';
-import p5 from 'p5';
+import * as THREE from 'three';
 
-export default class ProjectileSimulation extends ThreeDSimulation {
+export default class ProjectileSimulation extends ThreeJsSimulation {
+    // simulation constants
     e = 1;
-    G = 9.81;
+    G = -9.81;
     size = 250;
 
     constructor(container, inputs, graphs, controls, attributes) {
@@ -62,7 +63,7 @@ export default class ProjectileSimulation extends ThreeDSimulation {
         );
     }
 
-    init(p) {
+    simInit() {
         this.paused = false;
 
         // init data
@@ -70,7 +71,9 @@ export default class ProjectileSimulation extends ThreeDSimulation {
         this.data.s = [];
         this.data.v = [];
         this.data.a = [];
-        this.start = p.millis();
+        this.start = performance.now();
+        this.pauseStart = 0;
+        this.cumulativePause = 0;
 
         // get e input
         this.e = this.eInput.get();
@@ -79,93 +82,109 @@ export default class ProjectileSimulation extends ThreeDSimulation {
         this.size = this.sizeInput.get();
 
         // init particle
-        this.a = p.createVector(0, this.G, 0);
+        this.a = new THREE.Vector3(0, this.G, 0);
         this.particle = new Particle(
             Math.abs(this.mass.get()),
             this.s.get(),
             this.u.get(),
-            p.createVector(0, this.G, 0),
+            this.a,
+            0x9c6270,
+            this.scene
         );
+
+        // add axis geometry
+        const xPoints = [];
+        xPoints.push(new THREE.Vector3(-this.size, 0, 0));
+        xPoints.push(new THREE.Vector3(this.size, 0, 0));
+        const xAxisGeometry = new THREE.BufferGeometry().setFromPoints(xPoints);
+        
+        const yPoints = [];
+        yPoints.push(new THREE.Vector3(0, -this.size, 0));
+        yPoints.push(new THREE.Vector3(0, this.size, 0));
+        const yAxisGeometry = new THREE.BufferGeometry().setFromPoints(yPoints);
+        
+        const zPoints = [];
+        zPoints.push(new THREE.Vector3(0, 0, -this.size));
+        zPoints.push(new THREE.Vector3(0, 0, this.size));
+        const zAxisGeometry = new THREE.BufferGeometry().setFromPoints(zPoints);
+        
+        const axisMaterial = new THREE.LineBasicMaterial({
+            color: 0xdddddd,
+            transparent: true,
+            opacity: 0.2,
+        })
+
+        const xAxis = new THREE.Line(xAxisGeometry, axisMaterial);
+        const yAxis = new THREE.Line(yAxisGeometry, axisMaterial);
+        const zAxis = new THREE.Line(zAxisGeometry, axisMaterial);
+        this.scene.add(xAxis);
+        this.scene.add(yAxis);
+        this.scene.add(zAxis);
+
+        // calibrate camera        
+        this.camera.position.set(this.size, this.size, this.size);
+        this.controls.target.set(0, 0, 0);
+        this.controls.update();
     }
 
-    frame(p) {
-        if (this.rotateControl) {
-            p.orbitControl();
-        }
-        p.perspective(0.4, this.width / this.height, 10, 500000);
-        p.ambientLight(150);
-
-        // draw floor
-        p.push();
-        p.noStroke();
-        p.translate(0, 2, 0);
-        p.fill(255, 200, 200, 100);
-        p.pop();
-
-        for (let i = 0 - this.size; i <= this.size; i += 20) {
-            p.push();
-            p.stroke(255, 255, 255, 75);
-            p.line(i, 0, -this.size, i, 0, this.size);
-            p.line(-this.size, 0, i, this.size, 0, i);
-            p.pop();
-        }
-
+    simDraw() {
         // update particle based on playing state
         if (!this.paused) {
-            this.particle.update(p, this.e);
+            this.particle.update(this.e, this.deltaT);
         }
 
-        this.particle.show(p);
+        this.particle.show();
 
         // pause simulation when particle's y velocity is 0 or falls outside of sim size
         if (this.particle.vel.y == 0) {
-            this.pause = true;
+            this.togglePause(true);
         }
 
         if (
             this.particle.pos.x < -this.size ||
             this.particle.pos.x > this.size
         ) {
-            this.paused = true;
+            this.togglePause(true);
         }
 
         if (
             this.particle.pos.z < -this.size ||
             this.particle.pos.z > this.size
         ) {
-            this.paused = true;
+            this.togglePause(true);
         }
 
         // add data
-        let t = (p.millis() - this.start) * 0.001;
+        let t = (performance.now() - this.start - this.cumulativePause) * 1e-3;
 
-        // keep data to 100 readings
-        if (this.data.t.length > 200) {
+        // keep data to 200 readings
+        if (this.data.t.length > 250) {
             this.data.t.shift();
             this.data.s.shift();
             this.data.v.shift();
             this.data.a.shift();
         }
 
-        this.data.t.push(t);
-        this.data.s.push(this.particle.pos.y * -1);
-        this.data.v.push(this.particle.vel.y * -1);
-        this.data.a.push(this.particle.a.y * -1);
-
-        if (this.selected == 'graphs') {
-            this.graph();
+        if (!this.paused) {
+            this.data.t.push(t);
+            this.data.s.push(this.particle.pos.y);
+            this.data.v.push(this.particle.vel.y);
+            this.data.a.push(this.particle.a.y);
         }
+
+
+        this.graph();
 
         this.updateAttributes();
     }
 
     graph() {
-        if (this.paused) return;
-
-        // update datasets
-        this.updateChart(this.sChart, this.data.t, this.data.s);
-        this.updateChart(this.vChart, this.data.t, this.data.v);
-        this.updateChart(this.aChart, this.data.t, this.data.a);
+        if (this.selected == 'graphs') {
+            // update datasets
+            this.updateChart(this.sChart, this.data.t, this.data.s);
+            this.updateChart(this.vChart, this.data.t, this.data.v);
+            this.updateChart(this.aChart, this.data.t, this.data.a);
+        }
     }
 
     initChart(canvas, title, yLabel) {
@@ -246,92 +265,89 @@ export default class ProjectileSimulation extends ThreeDSimulation {
             s<sub>y</sub> = ${this.particle.pos.z.toFixed(2)} m <br>
 			v<sub>y</sub> = ${this.particle.vel.z.toFixed(2)} m/s <br>
 			a<sub>y</sub> = ${this.particle.a.z.toFixed(2)} m/s² <br> <br>
-			s<sub>z</sub> = ${-this.particle.pos.y.toFixed(2)} m <br>
-			v<sub>z</sub> = ${-this.particle.vel.y.toFixed(2)} m/s <br>
-			a<sub>z</sub> = ${-this.particle.a.y.toFixed(2)} m/s² <br>
+			s<sub>z</sub> = ${this.particle.pos.y.toFixed(2)} m <br>
+			v<sub>z</sub> = ${this.particle.vel.y.toFixed(2)} m/s <br>
+			a<sub>z</sub> = ${this.particle.a.y.toFixed(2)} m/s² <br>
 	  	`;
+    }
+
+    togglePause(paused = null) {
+        super.togglePause(paused)
+
+        if (this.paused) {
+            this.pauseStart = performance.now();
+        } else {
+            this.cumulativePause += (performance.now() - this.pauseStart);
+        }
     }
 }
 
 class Particle {
-    constructor(mass, position, u, a) {
+    constructor(mass, position, u, a, colour, scene) {
         this.mass = mass;
         this.pos = position;
         this.vel = u;
         this.a = a;
         this.r = Math.sqrt(mass) * 4;
+        this.colour = colour;
+        this.scene = scene;
 
-        // define particle colour
-        this.colourR = 166;
-        this.colourG = 189;
-        this.colourB = 111;
+        // initialise geometry
+        const particleGeometry = new THREE.SphereGeometry(this.r, 16, 16);
+        const particleMaterial = new THREE.MeshBasicMaterial({ 
+            color: this.colour, 
+            transparent: true, 
+            opacity: 0.75 
+        });
+        this.particleMesh = new THREE.Mesh(particleGeometry, particleMaterial);
+        this.scene.add(this.particleMesh); 
+
+        // initialise arrow
+        this.arrow = new THREE.ArrowHelper(
+            this.vel.clone().normalize(), 
+            this.pos,
+            this.vel.length(), 
+            0xaacadb,
+        );
+        this.scene.add(this.arrow);
     }
 
-    update(p, e) {
+    update(e, deltaT) {
         // massless objects don't experience gravity
         if (this.mass == 0) {
             return;
         }
 
         // compute new position
-        let uT = p5.Vector.mult(this.vel, 1 / p.getTargetFrameRate());
-        let aTSquared = p5.Vector.mult(
-            this.a,
-            0.5 * Math.pow(1 / p.getTargetFrameRate(), 2),
+        let uT = this.vel.clone().multiplyScalar(deltaT);
+        let aTSquared = this.a.clone().multiplyScalar(
+            0.5 * Math.pow(deltaT, 2),
         );
-        let S = p5.Vector.add(uT, aTSquared);
+        let S = aTSquared.clone().add(uT);
         this.pos.add(S);
 
         // compute new velocity
-        let Adt = p5.Vector.mult(this.a, 1 / p.getTargetFrameRate());
+        let Adt = this.a.clone().multiplyScalar(deltaT);
         this.vel.add(Adt);
 
-        if (this.pos.y > 0) {
+        if (this.pos.y < 0) {
             // calculate velocity when this.pos.y == 0
             let velAt0 = Math.sqrt(
                 Math.pow(this.vel.y, 2) - 2 * this.a.y * this.pos.y,
             );
             // prevent ball from going through ground
             this.pos.y = 0;
-            this.vel.y = -velAt0 * e;
+            this.vel.y = velAt0 * e;
         }
     }
 
-    show(p) {
-        // draw sphere
-        p.push();
-        p.translate(this.pos);
-        p.noStroke();
-        p.fill(this.colourR, this.colourG, this.colourB);
-        p.sphere(this.r, 24, 24);
-        p.pop();
+    show() {
+        // update position
+        this.particleMesh.position.copy(this.pos);
 
-        // draw velocity arrow
-        p.push();
-        p.translate(this.pos);
-        p.stroke(200, 200, 0);
-        p.strokeWeight(1.5);
-        p.line(0, 0, 0, this.vel.x, this.vel.y, this.vel.z);
-        p.pop();
-
-        p.push();
-        p.translate(p5.Vector.add(this.pos, this.vel));
-        // rotate cone to be in line with the velocity line
-        let n = p5.Vector.normalize(this.vel);
-
-        let xAxis = p.createVector(1, 0, 0);
-        let zAxis = p.createVector(0, 0, -1);
-        let rotationAxisZ = zAxis.cross(n);
-        let angleZ = p.acos(zAxis.dot(n));
-
-        // apply the rotation
-        if (rotationAxisZ.mag() > 0) {
-            p.rotate(angleZ, rotationAxisZ);
-            p.rotate(-p.PI / 2, xAxis);
-        }
-
-        p.fill(200, 200, 0);
-        p.noStroke();
-        p.cone(2, 4, 128, 1, true);
+        // update arrow
+        this.arrow.position.copy(this.pos);
+        this.arrow.setDirection(this.vel.clone().normalize());
+        this.arrow.setLength(this.vel.length());
     }
 }

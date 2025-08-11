@@ -1,12 +1,14 @@
-import { ThreeDSimulation } from './ThreeDSimulation';
+import { ThreeJsSimulation } from './ThreeJsSimulation';
 import { ValueInput } from '../Input/ValueInput';
 import { VectorInput } from '../Input/VectorInput';
 import { SliderInput } from '../Input/SliderInput';
 import { Button } from '../Controls/Button';
 import Chart from 'chart.js/auto';
-import p5 from 'p5';
+import * as THREE from 'three';
 
-export default class CollisionsSimulation extends ThreeDSimulation {
+
+export default class CollisionsSimulation extends ThreeJsSimulation {
+    // simulation constants
     size = 10;
     e = 1;
     sf = 10;
@@ -93,7 +95,7 @@ export default class CollisionsSimulation extends ThreeDSimulation {
         );
     }
 
-    init(p) {
+    simInit() {
         // add custom btns
         this.downloadBtn = new Button(
             this.controlWrapper,
@@ -107,7 +109,7 @@ export default class CollisionsSimulation extends ThreeDSimulation {
         this.data.x = [];
         this.data.y = [];
         this.data.z = [];
-        this.start = p.millis();
+        this.start = performance.now();
 
         // get e input
         this.e = this.eInput.get();
@@ -118,59 +120,76 @@ export default class CollisionsSimulation extends ThreeDSimulation {
         // init particles
         this.particleA = new Particle(
             Math.abs(this.massA.get()),
-            this.posA.get(),
+            this.posA.get().multiplyScalar(this.sf),
             this.velA.get(),
-            166,
-            189,
-            111,
+            0xaacadb,
+            this.scene
         );
 
         this.particleB = new Particle(
             Math.abs(this.massB.get()),
-            this.posB.get(),
+            this.posB.get().multiplyScalar(this.sf),
             this.velB.get(),
-            156,
-            98,
-            112,
+            0x9c6270,
+            this.scene
         );
+
+        // add axis geometry
+        const xPoints = [];
+        xPoints.push(new THREE.Vector3(-this.size, 0, 0));
+        xPoints.push(new THREE.Vector3(this.size, 0, 0));
+        const xAxisGeometry = new THREE.BufferGeometry().setFromPoints(xPoints);
+        
+        const yPoints = [];
+        yPoints.push(new THREE.Vector3(0, -this.size, 0));
+        yPoints.push(new THREE.Vector3(0, this.size, 0));
+        const yAxisGeometry = new THREE.BufferGeometry().setFromPoints(yPoints);
+        
+        const zPoints = [];
+        zPoints.push(new THREE.Vector3(0, 0, -this.size));
+        zPoints.push(new THREE.Vector3(0, 0, this.size));
+        const zAxisGeometry = new THREE.BufferGeometry().setFromPoints(zPoints);
+        
+        const axisMaterial = new THREE.LineBasicMaterial({
+            color: 0xdddddd,
+            transparent: true,
+            opacity: 0.5,
+        })
+
+        const xAxis = new THREE.Line(xAxisGeometry, axisMaterial);
+        const yAxis = new THREE.Line(yAxisGeometry, axisMaterial);
+        const zAxis = new THREE.Line(zAxisGeometry, axisMaterial);
+        this.scene.add(xAxis);
+        this.scene.add(yAxis);
+        this.scene.add(zAxis)
+
+        // calibrate camera        
+        this.camera.position.set(this.size * 1.5, this.size * 1.5, this.size * 1.5);
+        this.controls.target.set(0, 0, 0);
+        this.controls.update();
     }
 
-    frame(p) {
-        p.ambientLight(200);
-        p.background(0);
-
-        if (this.rotateControl) {
-            p.orbitControl();
-        }
-
-        p.perspective(0.4, this.width / this.height, 10, 500000);
-        p.push();
-        p.stroke(255, 255, 255, 75);
-        p.line(-this.size, 0, 0, this.size, 0, 0);
-        p.line(0, -this.size, 0, 0, this.size, 0);
-        p.line(0, 0, -this.size, 0, 0, this.size);
-        p.pop();
-
+    simDraw() {
         // update particles based on playing state
         if (!this.paused) {
             this.particleA.collide(this.particleB, this.e);
 
-            this.particleA.update(p, this.sf);
-            this.particleB.update(p, this.sf);
+            this.particleA.update(this.sf, this.deltaT);
+            this.particleB.update(this.sf, this.deltaT);
 
             this.particleA.edges(this.size);
             this.particleB.edges(this.size);
         }
 
-        this.particleA.show(p);
-        this.particleB.show(p);
+        this.particleA.show();
+        this.particleB.show();
 
         // end simulation when velocity < 0.001
         if (
-            this.particleA.velocity.mag().toFixed(2) == 0 &&
-            this.particleB.velocity.mag().toFixed(2) == 0
+            this.particleA.velocity.length().toFixed(2) == 0 &&
+            this.particleB.velocity.length().toFixed(2) == 0
         ) {
-            this.paused = true;
+            this.togglePause(true);
         }
 
         // add data
@@ -187,20 +206,18 @@ export default class CollisionsSimulation extends ThreeDSimulation {
         this.data.z[1] = this.particleB.velocity.y * this.particleB.mass;
         this.data.z[2] = this.data.z[0] + this.data.z[1];
 
-        if (this.selected == 'graphs') {
-            this.graph();
-        }
+        this.graph();
 
         this.updateAttributes();
     }
 
     graph() {
-        if (this.paused) return;
-
-        // update datasets
-        this.updateChart(this.xChart, this.data.particles, this.data.x);
-        this.updateChart(this.yChart, this.data.particles, this.data.y);
-        this.updateChart(this.zChart, this.data.particles, this.data.z);
+        if (this.selected == 'graphs') {
+            // update datasets
+            this.updateChart(this.xChart, this.data.particles, this.data.x);
+            this.updateChart(this.yChart, this.data.particles, this.data.y);
+            this.updateChart(this.zChart, this.data.particles, this.data.z);
+        }
     }
 
     initChart(canvas, title, yLabel) {
@@ -291,66 +308,86 @@ export default class CollisionsSimulation extends ThreeDSimulation {
 }
 
 class Particle {
-    constructor(mass, pos, vel, r, g, b) {
+    constructor(mass, pos, vel, colour, scene) {
         this.position = pos;
         this.velocity = vel;
-        this.acceleration = new p5.Vector(0, 0, 0);
+        this.acceleration = new THREE.Vector3(0, 0, 0);
         this.mass = mass;
         this.r = Math.sqrt(this.mass) * 10;
-        this.colR = r;
-        this.colG = g;
-        this.colB = b;
+        this.colour = colour;
+        this.scene = scene;
         this.collisions = [];
+
+        // initialise geometry
+        const particleGeometry = new THREE.SphereGeometry(this.r, 16, 16);
+        const particleMaterial = new THREE.MeshBasicMaterial({ color: this.colour });
+        this.particleMesh = new THREE.Mesh(particleGeometry, particleMaterial);
+        this.scene.add(this.particleMesh); 
     }
 
     collide(p, e) {
         // check if collision is to occur
-        if (p5.Vector.dist(this.position, p.position) <= this.r + p.r) {
+        if (this.position.distanceTo(p.position) <= this.r + p.r) {
             // collision will occur
             let m1 = this.mass;
             let m2 = p.mass;
 
-            let v1 = this.velocity;
-            let v2 = p.velocity;
+            let v1 = this.velocity.clone();
+            let v2 = p.velocity.clone();
 
             // delcare vectors normal and tangental to line of collision
-            let n = p5.Vector.sub(p.position, this.position).normalize();
+            let n = p.position.clone().sub(this.position).normalize();
+
+            const distance = this.position.distanceTo(p.position);
+            const overlap = (this.r + p.r) - distance;
+            if (overlap > 0) {
+                const separation = n.clone().multiplyScalar(overlap * 0.5);
+                this.position.sub(separation);
+                p.position.add(separation);
+            }
 
             // resolve velocities in n
-            let v1n = p5.Vector.dot(v1, n);
-            let v2n = p5.Vector.dot(v2, n);
+            let v1n = v1.dot(n);
+            let v2n = v2.dot(n);
 
-            let v1nv = p5.Vector.mult(n, v1n);
-            let v2nv = p5.Vector.mult(n, v2n);
+            let v1nv = n.clone().multiplyScalar(v1n);
+            let v2nv = n.clone().multiplyScalar(v2n);
 
             // subtract original normal velocities
-            let v1p = p5.Vector.sub(v1, v1nv);
-            let v2p = p5.Vector.sub(v2, v2nv);
+            let v1p = v1.clone().sub(v1nv);
+            let v2p = v2.clone().sub(v2nv);
 
-            // computer velocities after
+            // compute velocities after
             let v1np =
                 (m1 * v1n - m2 * e * v1n + m2 * v2n + m2 * e * v2n) / (m1 + m2);
             let v2np =
                 (m2 * v2n - m1 * e * v2n + m1 * v1n + m1 * e * v1n) / (m1 + m2);
 
             // add new normal velocities
-            let v1npv = p5.Vector.mult(n, v1np);
-            let v2npv = p5.Vector.mult(n, v2np);
+            let v1npv = n.clone().multiplyScalar(v1np);
+            let v2npv = n.clone().multiplyScalar(v2np);
 
             v1p.add(v1npv);
             v2p.add(v2npv);
 
             this.velocity = v1p;
             p.velocity = v2p;
+
+            // log collisions
+            let data = [v1.x * m1, v2.x * m2, v1.y * m1, v2.y * m2, v1.z * m1, v2.z * m2, v1p.x * m1, v2p.x * m2, v1p.y * m1, v2p.y * m2, v1p.z * m1, v2p.z * m2]
+
+            // add collision to each particle history
+            this.collisions.push(data);
+            p.collisions.push(data)
         }
     }
 
-    update(p, sf) {
+    update(sf, deltaT) {
         this.velocity.add(this.acceleration);
         this.position.add(
-            p5.Vector.mult(this.velocity, (1 / p.getTargetFrameRate()) * sf),
+            this.velocity.clone().multiplyScalar(deltaT * sf)
         );
-        this.acceleration.mult(0);
+        this.acceleration.multiplyScalar(0);
     }
 
     edges(size) {
@@ -379,13 +416,8 @@ class Particle {
         }
     }
 
-    show(p) {
-        p.push();
-        p.strokeWeight(0.5);
-        p.fill(this.colR, this.colG, this.colB);
-        p.translate(this.position.x, this.position.y, this.position.z);
-        p.noStroke();
-        p.sphere(this.r, 24, 24);
-        p.pop();
+    show() {
+        // update particle position
+        this.particleMesh.position.copy(this.position)
     }
 }

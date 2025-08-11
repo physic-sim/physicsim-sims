@@ -57,6 +57,21 @@ export class ThreeJsSimulation {
             }
         });
 
+        // pause simulation when document is hidden
+        document.addEventListener("visibilitychange", (e) => {
+            if (document.hidden) {
+                if (!this.pausedForVisibility) {
+                    this.pausedForVisibility = true;
+                    this.prevPauseState = this.paused;
+                    this.togglePause(true);
+                }
+            } else if (this.paused) {
+                this.pausedForVisibility = false;
+                this.isFirstFrame = true;
+                this.togglePause(this.prevPauseState);
+            }
+        })
+
        this.simSetup(stopLoading); // run setup of simulation
     }
 
@@ -124,11 +139,19 @@ export class ThreeJsSimulation {
 
         // run simulation init code
         this.simInit();
-        this.renderer.setAnimationLoop(this.animate.bind(this));
 
         // disable loading screen
         stopLoading();
+
+
+        // time scaling setup
+        this.lastTime = performance.now();
+        this.deltaTime = 0;
+        this.isFirstFrame = true;
+
+        // run simulation
         this.paused = false;
+        this.renderer.setAnimationLoop(this.animate.bind(this));
     }
  
     simInit() { // initial sim logic wrapper
@@ -140,13 +163,26 @@ export class ThreeJsSimulation {
     }
 
     animate() { // animation loop
+        // fps measuring logic
+        this.frameCount++;
+        const now = performance.now();
+        this.deltaT = (now - this.lastTime) * 1e-3;
+        this.lastTime = now;
+
+        if (this.isFirstFrame) { // set base lines of first frame for scaling
+            this.isFirstFrame = false;
+            return;
+        }
+
         this.simDraw(); // run sim draw logic
+
+        // render scene
         this.controls.update();
         this.renderer.render(this.scene, this.camera);
     }
 
     togglePause(paused = null) {
-        if (typeof paused !== Boolean) {
+        if (typeof paused !== 'boolean') {
             paused = !this.paused;
         }
         
